@@ -1,11 +1,72 @@
-self.addEventListener('install', function(event){
-  self.skipWaiting();
-});
-self.addEventListener('activate', function(event){
-  self.clients.claim();
-});
-self.addEventListener('fetch', function(event){
-  event.respondWith(fetch(event.request).catch(function(){
-    return new Response('Estás sin conexión.', {status: 503, statusText: 'offline'});
-  }));
-});
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>Objetivos personales</title>
+<meta name="theme-color" content="#16241F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Objetivos">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#16241F;
+    --paper:#EDE7D6;
+    --paper-2:#E3DCC7;
+    --ink:#1B2B24;
+    --ink-soft:#4B5A52;
+    --ocean:#2F6F8F;
+    --ocean-dark:#1F4E66;
+    --gold:#B9862E;
+    --gold-light:#EFDBAF;
+    --coral:#B9634A;
+    --line: rgba(27,43,36,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);}
+  body{font-family:'Inter',sans-serif;}
+  .app{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--paper);
+    padding:calc(28px + env(safe-area-inset-top)) 18px calc(48px + env(safe-area-inset-bottom));
+    max-width:640px;
+    margin:0 auto;
+    min-height:100vh;
+  }
+  .masthead{
+    border-bottom:1px solid rgba(237,231,214,0.25);
+    padding-bottom:16px;
+    margin-bottom:20px;
+  }
+  .masthead h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:24px;
+    margin:0 0 4px;
+    letter-spacing:0.2px;
+  }
+  .masthead .date{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:rgba(237,231,214,0.65);
+    text-transform:capitalize;
+  }
+  .tabs{
+    display:flex;
+    gap:6px;
+    margin-bottom:20px;
+  }
+  .tab{
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    font-weight:500;
+    padding:8px 14px;
+    border-radius:20px;
+    border:1px solid rgba(237,231,214,0.25);
+    background:transparent;
