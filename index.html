@@ -678,6 +678,7 @@
   function daysTagText(item){
     if(item.frequency === 'monthly') return 'mensual';
     var days = (item.days || ALL_DAYS).slice().sort();
+    if(days.length === 0) return 'sin día fijo';
     if(days.length === 7) return null;
     var joined = days.join(',');
     if(joined === '1,2,3,4,5') return 'L\u2013V';
@@ -929,6 +930,7 @@
     if(mode === 'daily-all'){ item.frequency = 'daily'; item.days = ALL_DAYS.slice(); }
     else if(mode === 'daily-weekdays'){ item.frequency = 'daily'; item.days = WEEKDAYS_ONLY.slice(); }
     else if(mode === 'monthly'){ item.frequency = 'monthly'; }
+    else if(mode === 'no-schedule'){ item.frequency = 'daily'; item.days = []; }
     saveConfig();
     render();
   }
@@ -1064,11 +1066,12 @@
           return;
         }
         var isMonthly = item.frequency === 'monthly';
+        var isNoSchedule = !isMonthly && (item.days||[]).length === 0;
         var rawState = isMonthly ? null : rec[item.id];
         var checked = isMonthly ? !!(monthlyEntries[mk] && monthlyEntries[mk][item.id]) : rawState === true;
         var excludedToday = rawState === 'skip';
         var streak = isMonthly ? 0 : computeStreak(item.id, item.days || ALL_DAYS);
-        var notRequiredToday = !isMonthly && !isDayRequired(item, todayDate);
+        var notRequiredToday = !isMonthly && !isNoSchedule && !isDayRequired(item, todayDate);
         var tag = daysTagText(item);
         html += '<div class="item-row '+(checked?'done':'')+'">';
         html += '<button class="checkbox '+(checked?'checked':'')+'" data-item="'+item.id+'" data-freqtype="'+(isMonthly?'monthly':'daily')+'" aria-label="'+item.label+'">'+checkIcon()+'</button>';
@@ -1087,13 +1090,15 @@
         html += '</div>';
 
         if(editingFreqFor === item.id){
+          var isNoSchedule = item.frequency === 'daily' && (item.days||[]).length === 0;
           html += '<div class="freq-editor">';
           html += '<div class="freq-options">';
           html += '<button class="freq-opt '+(item.frequency==='daily' && (item.days||[]).length===7?'active':'')+'" data-setfreq="daily-all" data-freqitem="'+item.id+'">Todos los días</button>';
           html += '<button class="freq-opt '+(item.frequency==='daily' && (item.days||[]).slice().sort().join(',')==='1,2,3,4,5'?'active':'')+'" data-setfreq="daily-weekdays" data-freqitem="'+item.id+'">Solo L\u2013V</button>';
           html += '<button class="freq-opt '+(item.frequency==='monthly'?'active':'')+'" data-setfreq="monthly" data-freqitem="'+item.id+'">Mensual</button>';
+          html += '<button class="freq-opt '+(isNoSchedule?'active':'')+'" data-setfreq="no-schedule" data-freqitem="'+item.id+'">Sin día fijo</button>';
           html += '</div>';
-          if(item.frequency === 'daily'){
+          if(item.frequency === 'daily' && !isNoSchedule){
             var abbr = ['D','L','M','X','J','V','S'];
             var itemDays = item.days || ALL_DAYS;
             html += '<div class="freq-days">';
@@ -1101,6 +1106,9 @@
               html += '<button class="day-chip '+(itemDays.indexOf(wd)>-1?'on':'')+'" data-toggleday="'+item.id+'" data-day="'+wd+'">'+abbr[wd]+'</button>';
             }
             html += '</div>';
+          }
+          if(isNoSchedule){
+            html += '<div class="empty-note" style="text-align:left;padding:0 0 8px;font-size:12px;">No cuenta para el cumplimiento ni las rachas. Marcalo cuando quieras, sin exigencia.</div>';
           }
           html += '<button class="add-cancel" data-closefreq="1">Listo</button>';
           html += '</div>';
@@ -1296,8 +1304,10 @@
           var key = dateKey(d);
           if(isBeforeStart(key)) return;
           if(!isDayRequired(item, d)) return;
+          var rec = entries[key] || {};
+          if(rec[item.id] === 'skip') return;
           req++;
-          if(entries[key] && entries[key][item.id]) done++;
+          if(rec[item.id] === true) done++;
         });
         var streak = computeStreak(item.id, item.days || ALL_DAYS);
         html += '<div class="prio-row"><span class="priority-dot"></span><span class="prio-name">'+item.label+'</span><span class="prio-ratio">'+done+'/'+req+' \u00b7 '+streak+'d racha</span></div>';
