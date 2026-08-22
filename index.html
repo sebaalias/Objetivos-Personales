@@ -658,6 +658,8 @@
   var confirmDeleteCat = null;
   var editingFreqFor = null;
   var expandedMonth = null;
+  var editingItemLabelFor = null;
+  var editingCatTitleFor = null;
   var contentEl = document.getElementById('content');
   var dateLabelEl = document.getElementById('date-label');
   var tabsEl = document.getElementById('tabs');
@@ -868,6 +870,9 @@
   function freqIcon(){
     return '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="13" height="12" rx="1.5"/><path d="M3.5 8h13M7 3v3M13 3v3"/></svg>';
   }
+  function editIcon(){
+    return '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3.5l4 4L6 18H2v-4L12.5 3.5z"/></svg>';
+  }
 
   function saveEntries(){
     try{ localStorage.setItem(ENTRIES_KEY, JSON.stringify(entries)); }
@@ -971,6 +976,26 @@
     render();
   }
 
+  function renameItem(itemId, newLabel){
+    newLabel = (newLabel || '').trim();
+    var item = findItemById(itemId);
+    if(!item || !newLabel) { editingItemLabelFor = null; render(); return; }
+    item.label = newLabel;
+    editingItemLabelFor = null;
+    saveConfig();
+    render();
+  }
+
+  function renameCategory(catId, newTitle){
+    newTitle = (newTitle || '').trim();
+    var cat = config.find(function(c){ return c.id === catId; });
+    if(!cat || !newTitle){ editingCatTitleFor = null; render(); return; }
+    cat.title = newTitle;
+    editingCatTitleFor = null;
+    saveConfig();
+    render();
+  }
+
   function togglePriority(itemId){
     var cat = findCatOfItem(itemId);
     if(!cat) return;
@@ -1042,13 +1067,22 @@
       var catDone = 0;
       requiredToday.forEach(function(i){ if(rec[i.id] === true) catDone++; });
       html += '<div class="card">';
-      html += '<div class="card-head"><span class="card-num">'+cat.num+'</span><span class="card-title">'+cat.title+'</span>';
-      html += '<span class="card-count">'+catDone+'/'+requiredToday.length+'</span>';
-      html += '<span class="cat-head-actions">';
-      if(catIdx > 0) html += '<button class="icon-btn" data-catup="'+cat.id+'" aria-label="Subir categoría">'+upIcon()+'</button>';
-      if(catIdx < config.length-1) html += '<button class="icon-btn" data-catdown="'+cat.id+'" aria-label="Bajar categoría">'+downIcon()+'</button>';
-      html += '<button class="icon-btn trash-btn" data-delcat="'+cat.id+'" aria-label="Eliminar categoría '+cat.title+'">'+trashIcon()+'</button>';
-      html += '</span>';
+      html += '<div class="card-head">';
+      if(editingCatTitleFor === cat.id){
+        html += '<span class="card-num">'+cat.num+'</span>';
+        html += '<input type="text" class="add-input rename-input" id="rename-cat-input" value="'+cat.title.replace(/"/g,'&quot;')+'" />';
+        html += '<button class="icon-btn" data-savecattitle="'+cat.id+'" aria-label="Guardar nombre">'+checkIcon()+'</button>';
+        html += '<button class="add-cancel" data-cancelcattitle="1">Cancelar</button>';
+      } else {
+        html += '<span class="card-num">'+cat.num+'</span><span class="card-title">'+cat.title+'</span>';
+        html += '<span class="card-count">'+catDone+'/'+requiredToday.length+'</span>';
+        html += '<span class="cat-head-actions">';
+        html += '<button class="icon-btn" data-editcattitle="'+cat.id+'" aria-label="Editar nombre de categoría">'+editIcon()+'</button>';
+        if(catIdx > 0) html += '<button class="icon-btn" data-catup="'+cat.id+'" aria-label="Subir categoría">'+upIcon()+'</button>';
+        if(catIdx < config.length-1) html += '<button class="icon-btn" data-catdown="'+cat.id+'" aria-label="Bajar categoría">'+downIcon()+'</button>';
+        html += '<button class="icon-btn trash-btn" data-delcat="'+cat.id+'" aria-label="Eliminar categoría '+cat.title+'">'+trashIcon()+'</button>';
+        html += '</span>';
+      }
       html += '</div>';
 
       if(confirmDeleteCat === cat.id){
@@ -1073,6 +1107,16 @@
         var streak = isMonthly ? 0 : computeStreak(item.id, item.days || ALL_DAYS);
         var notRequiredToday = !isMonthly && !isNoSchedule && !isDayRequired(item, todayDate);
         var tag = daysTagText(item);
+
+        if(editingItemLabelFor === item.id){
+          html += '<div class="item-row">';
+          html += '<input type="text" class="add-input rename-input" id="rename-item-input" value="'+item.label.replace(/"/g,'&quot;')+'" />';
+          html += '<button class="icon-btn" data-saveitemlabel="'+item.id+'" aria-label="Guardar nombre">'+checkIcon()+'</button>';
+          html += '<button class="add-cancel" data-cancelitemlabel="1">Cancelar</button>';
+          html += '</div>';
+          return;
+        }
+
         html += '<div class="item-row '+(checked?'done':'')+'">';
         html += '<button class="checkbox '+(checked?'checked':'')+'" data-item="'+item.id+'" data-freqtype="'+(isMonthly?'monthly':'daily')+'" aria-label="'+item.label+'">'+checkIcon()+'</button>';
         html += '<span class="item-label">'+(item.priority?'<span class="priority-dot" title="Prioritario"></span>':'')+item.label;
@@ -1083,11 +1127,13 @@
         html += '</span>';
         html += '<span class="streak '+(streak===0?'zero':'')+'">'+(isMonthly ? '' : (streak>0 ? streak+'d' : '\u2014'))+'</span>';
         html += '<span class="row-actions">';
+        html += '<button class="icon-btn" data-edititemlabel="'+item.id+'" aria-label="Editar nombre">'+editIcon()+'</button>';
         html += '<button class="icon-btn '+(editingFreqFor===item.id?'active':'')+'" data-freq="'+item.id+'" aria-label="Editar frecuencia">'+freqIcon()+'</button>';
         html += '<button class="icon-btn star-btn '+(item.priority?'active':'')+'" data-star="'+item.id+'" aria-label="Marcar como prioritario">'+starIcon(item.priority)+'</button>';
         html += '<button class="icon-btn trash-btn" data-delitem="'+item.id+'" aria-label="Eliminar ítem">'+trashIcon()+'</button>';
         html += '</span>';
         html += '</div>';
+
 
         if(editingFreqFor === item.id){
           var isNoSchedule = item.frequency === 'daily' && (item.days||[]).length === 0;
@@ -1180,6 +1226,48 @@
     contentEl.querySelectorAll('[data-closefreq]').forEach(function(btn){
       btn.addEventListener('click', function(){ editingFreqFor = null; render(); });
     });
+    contentEl.querySelectorAll('[data-editcattitle]').forEach(function(btn){
+      btn.addEventListener('click', function(){ editingCatTitleFor = btn.getAttribute('data-editcattitle'); render(); });
+    });
+    contentEl.querySelectorAll('[data-cancelcattitle]').forEach(function(btn){
+      btn.addEventListener('click', function(){ editingCatTitleFor = null; render(); });
+    });
+    contentEl.querySelectorAll('[data-savecattitle]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var input = document.getElementById('rename-cat-input');
+        renameCategory(btn.getAttribute('data-savecattitle'), input ? input.value : '');
+      });
+    });
+    var renameCatInput = document.getElementById('rename-cat-input');
+    if(renameCatInput){
+      renameCatInput.focus();
+      renameCatInput.setSelectionRange(renameCatInput.value.length, renameCatInput.value.length);
+      renameCatInput.addEventListener('keydown', function(e){
+        if(e.key === 'Enter'){ renameCategory(editingCatTitleFor, renameCatInput.value); }
+        else if(e.key === 'Escape'){ editingCatTitleFor = null; render(); }
+      });
+    }
+    contentEl.querySelectorAll('[data-edititemlabel]').forEach(function(btn){
+      btn.addEventListener('click', function(){ editingItemLabelFor = btn.getAttribute('data-edititemlabel'); render(); });
+    });
+    contentEl.querySelectorAll('[data-cancelitemlabel]').forEach(function(btn){
+      btn.addEventListener('click', function(){ editingItemLabelFor = null; render(); });
+    });
+    contentEl.querySelectorAll('[data-saveitemlabel]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var input = document.getElementById('rename-item-input');
+        renameItem(btn.getAttribute('data-saveitemlabel'), input ? input.value : '');
+      });
+    });
+    var renameItemInput = document.getElementById('rename-item-input');
+    if(renameItemInput){
+      renameItemInput.focus();
+      renameItemInput.setSelectionRange(renameItemInput.value.length, renameItemInput.value.length);
+      renameItemInput.addEventListener('keydown', function(e){
+        if(e.key === 'Enter'){ renameItem(editingItemLabelFor, renameItemInput.value); }
+        else if(e.key === 'Escape'){ editingItemLabelFor = null; render(); }
+      });
+    }
     contentEl.querySelectorAll('.trash-btn[data-delitem]').forEach(function(btn){
       btn.addEventListener('click', function(){ confirmDeleteItem = btn.getAttribute('data-delitem'); render(); });
     });
