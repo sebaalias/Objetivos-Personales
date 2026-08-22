@@ -130,6 +130,7 @@
     font-size:12px;
     color:var(--ocean-dark);
     font-weight:500;
+    margin-right:8px;
   }
   .card-title{
     font-family:'Fraunces',serif;
@@ -380,6 +381,10 @@
     background:var(--gold);
     border-color:var(--gold);
   }
+  .dot-btn.skip{
+    background:repeating-linear-gradient(45deg, rgba(122,58,58,0.5), rgba(122,58,58,0.5) 2px, transparent 2px, transparent 4px);
+    border-color:rgba(122,58,58,0.6);
+  }
   .item-tag{
     font-family:'IBM Plex Mono',monospace;
     font-size:10px;
@@ -460,6 +465,7 @@
     color:var(--ink);
     border-radius:10px;
     padding:14px 16px;
+    text-align:center;
   }
   .metric-label{
     font-size:12px;
@@ -566,7 +572,6 @@
     .card{padding:14px 14px 6px;}
     .masthead h1{font-size:21px;}
     .hist-table{font-size:10px;}
-    .metric-row{flex-direction:column;}
   }
 </style>
 </head>
@@ -580,6 +585,7 @@
     <button class="tab active" id="tab-hoy">Hoy</button>
     <button class="tab" id="tab-semana">Semana</button>
     <button class="tab" id="tab-resumen">Resumen</button>
+    <button class="tab" id="tab-meses">Meses</button>
   </div>
   <div id="content" class="loading">Cargando…</div>
   <div class="backup-row">
@@ -617,8 +623,7 @@
       {id:'admin', num:'03', title:'Actividades administrativas', items:[
         {id:'hogar', label:'Tareas del hogar', priority:true, frequency:'daily', days:ALL_DAYS.slice()},
         {id:'cotidiana', label:'Cotidiana', priority:false, frequency:'daily', days:ALL_DAYS.slice()},
-        {id:'adicionales', label:'Adicionales', priority:false, frequency:'daily', days:ALL_DAYS.slice()},
-        {id:'facturacion', label:'Facturación', priority:false, frequency:'monthly'}
+        {id:'adicionales', label:'Adicionales', priority:false, frequency:'daily', days:ALL_DAYS.slice()}
       ]},
       {id:'trabajo', num:'04', title:'Trabajo', items:[
         {id:'ml', label:'ML', priority:true, frequency:'daily', days:WEEKDAYS_ONLY.slice()},
@@ -652,6 +657,7 @@
   var confirmDeleteItem = null;
   var confirmDeleteCat = null;
   var editingFreqFor = null;
+  var expandedMonth = null;
   var contentEl = document.getElementById('content');
   var dateLabelEl = document.getElementById('date-label');
   var tabsEl = document.getElementById('tabs');
@@ -729,7 +735,9 @@
       if(isBeforeStart(kCheck)) break;
       if(days.indexOf(d.getDay()) === -1){ d.setDate(d.getDate()-1); continue; }
       var key = dateKey(d);
-      if(entries[key] && entries[key][itemId] === true){
+      var val = entries[key] && entries[key][itemId];
+      if(val === 'skip'){ d.setDate(d.getDate()-1); continue; }
+      if(val === true){
         streak++;
         d.setDate(d.getDate()-1);
       } else { break; }
@@ -745,8 +753,9 @@
       cat.items.forEach(function(item){
         if(item.frequency === 'monthly') return;
         if(!isDayRequired(item, d)) return;
+        if(rec[item.id] === 'skip') return;
         total++;
-        if(rec[item.id]) done++;
+        if(rec[item.id] === true) done++;
       });
     });
     return {done:done, total:total, pct: total ? Math.round((done/total)*100) : 0};
@@ -762,8 +771,7 @@
     return days;
   }
 
-  function weekStats(){
-    var days = last7Days();
+  function rangeStats(days){
     var totalDone=0, totalReq=0, prioDone=0, prioReq=0;
     days.forEach(function(d){
       var key = dateKey(d);
@@ -773,16 +781,68 @@
         cat.items.forEach(function(item){
           if(item.frequency === 'monthly') return;
           if(!isDayRequired(item, d)) return;
+          if(rec[item.id] === 'skip') return;
           totalReq++;
-          if(rec[item.id]) totalDone++;
+          if(rec[item.id] === true) totalDone++;
           if(item.priority){
             prioReq++;
-            if(rec[item.id]) prioDone++;
+            if(rec[item.id] === true) prioDone++;
           }
         });
       });
     });
     return {totalDone:totalDone, totalReq:totalReq, prioDone:prioDone, prioReq:prioReq};
+  }
+
+  function weekStats(){
+    return rangeStats(last7Days());
+  }
+
+  function daysInMonthRange(monthDate){
+    var year = monthDate.getFullYear(), month = monthDate.getMonth();
+    var first = new Date(year, month, 1);
+    var last = new Date(year, month+1, 0);
+    var today = new Date(); today.setHours(0,0,0,0);
+    if(last > today) last = today;
+    var days = [];
+    var d = new Date(first);
+    while(d <= last){
+      days.push(new Date(d));
+      d.setDate(d.getDate()+1);
+    }
+    return days;
+  }
+
+  function buildMonthsList(){
+    var months = [];
+    var cursor = new Date();
+    cursor.setDate(1);
+    cursor.setHours(0,0,0,0);
+    var startMonthKey = settings.startDate ? monthKey(parseKey(settings.startDate)) : monthKey(cursor);
+    var guard = 0;
+    while(guard < 24){
+      guard++;
+      months.push(new Date(cursor));
+      if(monthKey(cursor) === startMonthKey) break;
+      cursor.setMonth(cursor.getMonth()-1);
+    }
+    return months;
+  }
+
+  function allDaysSinceStart(){
+    if(!settings.startDate) return [];
+    var start = parseKey(settings.startDate);
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    var days = [];
+    var d = new Date(start);
+    var guard = 0;
+    while(d <= today && guard < 3660){
+      guard++;
+      days.push(new Date(d));
+      d.setDate(d.getDate()+1);
+    }
+    return days;
   }
 
   function checkIcon(){
@@ -976,9 +1036,9 @@
     config.forEach(function(cat, catIdx){
       var rec = entries[key] || {};
       var dailyItems = cat.items.filter(function(i){ return i.frequency !== 'monthly'; });
-      var requiredToday = dailyItems.filter(function(i){ return isDayRequired(i, todayDate); });
+      var requiredToday = dailyItems.filter(function(i){ return isDayRequired(i, todayDate) && rec[i.id] !== 'skip'; });
       var catDone = 0;
-      requiredToday.forEach(function(i){ if(rec[i.id]) catDone++; });
+      requiredToday.forEach(function(i){ if(rec[i.id] === true) catDone++; });
       html += '<div class="card">';
       html += '<div class="card-head"><span class="card-num">'+cat.num+'</span><span class="card-title">'+cat.title+'</span>';
       html += '<span class="card-count">'+catDone+'/'+requiredToday.length+'</span>';
@@ -1004,7 +1064,9 @@
           return;
         }
         var isMonthly = item.frequency === 'monthly';
-        var checked = isMonthly ? !!(monthlyEntries[mk] && monthlyEntries[mk][item.id]) : rec[item.id];
+        var rawState = isMonthly ? null : rec[item.id];
+        var checked = isMonthly ? !!(monthlyEntries[mk] && monthlyEntries[mk][item.id]) : rawState === true;
+        var excludedToday = rawState === 'skip';
         var streak = isMonthly ? 0 : computeStreak(item.id, item.days || ALL_DAYS);
         var notRequiredToday = !isMonthly && !isDayRequired(item, todayDate);
         var tag = daysTagText(item);
@@ -1013,6 +1075,7 @@
         html += '<span class="item-label">'+(item.priority?'<span class="priority-dot" title="Prioritario"></span>':'')+item.label;
         if(tag) html += '<span class="item-tag">'+tag+'</span>';
         if(notRequiredToday) html += '<span class="item-note">No obligatorio hoy</span>';
+        else if(excludedToday) html += '<span class="item-note">Excepción hoy (no cuenta)</span>';
         if(isMonthly) html += '<span class="item-note">'+(checked?'Hecho este mes':'Pendiente este mes')+'</span>';
         html += '</span>';
         html += '<span class="streak '+(streak===0?'zero':'')+'">'+(isMonthly ? '' : (streak>0 ? streak+'d' : '\u2014'))+'</span>';
@@ -1165,7 +1228,7 @@
   function renderSemana(){
     var days = last7Days();
     var html = '<div class="empty-note" style="padding:0 0 12px;text-align:left;">'+
-      '<span class="priority-dot" style="margin-right:5px;"></span>negrita = prioritario &nbsp;&nbsp;<span class="dot na" style="width:9px;height:9px;vertical-align:-1px;"></span> no obligatorio ese día &nbsp;&nbsp;toc\u00e1 un punto para corregirlo</div>';
+      '<span class="priority-dot" style="margin-right:5px;"></span>negrita = prioritario &nbsp;&nbsp;<span class="dot na" style="width:9px;height:9px;vertical-align:-1px;"></span> no obligatorio ese día &nbsp;&nbsp;toc\u00e1 un punto: hecho \u2192 excepci\u00f3n (feriado, etc.) \u2192 vac\u00edo</div>';
     html += '<div class="card"><table class="hist-table"><thead><tr><th class="hist-item-label"></th>';
     days.forEach(function(d){
       html += '<th>'+WEEKDAYS[d.getDay()]+'<br>'+d.getDate()+'</th>';
@@ -1174,7 +1237,7 @@
     config.forEach(function(cat){
       var dailyItems = cat.items.filter(function(i){ return i.frequency !== 'monthly'; });
       if(!dailyItems.length) return;
-      html += '<tr class="hist-cat-row"><td colspan="'+(days.length+1)+'"><span class="card-num">'+cat.num+'</span>'+cat.title+'</td></tr>';
+      html += '<tr class="hist-cat-row"><td colspan="'+(days.length+1)+'"><span class="card-num">'+cat.num+'</span> '+cat.title+'</td></tr>';
       dailyItems.forEach(function(item){
         html += '<tr><td class="hist-item-label'+(item.priority?' is-priority':'')+'">'+item.label+'</td>';
         days.forEach(function(d){
@@ -1183,8 +1246,10 @@
           if(!required){
             html += '<td><span class="dot na"></span></td>';
           } else {
-            var on = entries[key] && entries[key][item.id];
-            html += '<td><button class="dot-btn '+(on?'on':'')+'" data-toggleitem="'+item.id+'" data-toggledate="'+key+'" aria-label="'+item.label+' '+key+'"></button></td>';
+            var state = entries[key] && entries[key][item.id];
+            var cls = state === true ? 'on' : (state === 'skip' ? 'skip' : '');
+            var label = state === true ? 'hecho' : (state === 'skip' ? 'excepción' : 'sin marcar');
+            html += '<td><button class="dot-btn '+cls+'" data-toggleitem="'+item.id+'" data-toggledate="'+key+'" aria-label="'+item.label+' '+key+' ('+label+')"></button></td>';
           }
         });
         html += '</tr>';
@@ -1197,7 +1262,10 @@
         var itemId = btn.getAttribute('data-toggleitem');
         var key = btn.getAttribute('data-toggledate');
         if(!entries[key]) entries[key] = {};
-        entries[key][itemId] = !entries[key][itemId];
+        var cur = entries[key][itemId];
+        if(cur === true){ entries[key][itemId] = 'skip'; }
+        else if(cur === 'skip'){ delete entries[key][itemId]; }
+        else { entries[key][itemId] = true; }
         saveEntries();
         renderSemana();
       });
@@ -1214,10 +1282,6 @@
     html += '<div class="metric-label" style="font-size:12.5px;">Prioritarios \u00b7 \u00faltimos 7 d\u00edas</div>';
     html += '<div class="metric-value" style="font-size:42px;margin:6px 0 2px;">'+prioPct+'%</div>';
     html += '<div class="metric-label">'+stats.prioDone+' de '+stats.prioReq+' cumplidos</div>';
-    html += '</div>';
-
-    html += '<div class="metric-row">';
-    html += '<div class="metric-card"><div class="metric-label">Cumplimiento general (7 d\u00edas)</div><div class="metric-value" style="font-size:20px;">'+pct+'%</div></div>';
     html += '</div>';
 
     html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Detalle de prioritarios</span></div>';
@@ -1242,6 +1306,10 @@
     if(!any) html += '<div class="empty-note">Todavía no marcaste ítems como prioritarios.</div>';
     html += '</div>';
 
+    html += '<div class="metric-row">';
+    html += '<div class="metric-card"><div class="metric-label">Cumplimiento general (7 d\u00edas)</div><div class="metric-value" style="font-size:20px;">'+pct+'%</div></div>';
+    html += '</div>';
+
     var monthlyItems = [];
     config.forEach(function(cat){
       cat.items.forEach(function(item){ if(item.frequency === 'monthly') monthlyItems.push(item); });
@@ -1258,11 +1326,110 @@
     contentEl.innerHTML = html;
   }
 
+  function renderMeses(){
+    var months = buildMonthsList();
+    var monthlyItems = [];
+    var priorityItems = [];
+    config.forEach(function(cat){
+      cat.items.forEach(function(item){
+        if(item.frequency === 'monthly') monthlyItems.push(item);
+        else if(item.priority) priorityItems.push(item);
+      });
+    });
+    var html = '';
+
+    var overall = rangeStats(allDaysSinceStart());
+    var overallPct = overall.totalReq ? Math.round((overall.totalDone/overall.totalReq)*100) : 0;
+    var overallPrioPct = overall.prioReq ? Math.round((overall.prioDone/overall.prioReq)*100) : 0;
+    var startLabel = settings.startDate ? formatDateHuman(settings.startDate) : '';
+    var allDays = allDaysSinceStart();
+    html += '<div class="card">';
+    html += '<div style="font-size:13px;color:var(--ink-soft);padding:0 0 10px;">Acumulado desde el <strong style="color:var(--ink);">'+startLabel+'</strong></div>';
+    html += '<div class="metric-row">';
+    html += '<div class="metric-card"><div class="metric-label" style="font-size:11px;">Prioritarios</div><div class="metric-value" style="font-size:30px;">'+overallPrioPct+'%</div></div>';
+    html += '<div class="metric-card"><div class="metric-label" style="font-size:11px;">General</div><div class="metric-value" style="font-size:18px;">'+overallPct+'%</div></div>';
+    html += '</div>';
+    if(priorityItems.length){
+      html += '<button class="link-btn" data-toggleprio="__overall__" style="font-size:12px;">'+(expandedMonth==='__overall__'?'Ocultar detalle de prioritarios':'Ver detalle de prioritarios')+'</button>';
+      if(expandedMonth === '__overall__'){
+        priorityItems.forEach(function(item){
+          var req = 0, done = 0;
+          allDays.forEach(function(d){
+            var key = dateKey(d);
+            if(!isDayRequired(item, d)) return;
+            var rec = entries[key] || {};
+            if(rec[item.id] === 'skip') return;
+            req++;
+            if(rec[item.id] === true) done++;
+          });
+          html += '<div class="prio-row"><span class="priority-dot"></span><span class="prio-name">'+item.label+'</span><span class="prio-ratio">'+done+'/'+req+'</span></div>';
+        });
+      }
+    }
+    html += '</div>';
+
+    months.forEach(function(mDate, idx){
+      var mk = monthKey(mDate);
+      var days = daysInMonthRange(mDate);
+      var stats = rangeStats(days);
+      var pct = stats.totalReq ? Math.round((stats.totalDone/stats.totalReq)*100) : 0;
+      var prioPct = stats.prioReq ? Math.round((stats.prioDone/stats.prioReq)*100) : 0;
+      var label = MONTHS[mDate.getMonth()]+' '+mDate.getFullYear();
+      html += '<div class="card">';
+      html += '<div class="card-head"><span class="card-title" style="font-size:15px;text-transform:capitalize;">'+label+'</span></div>';
+      if(stats.totalReq === 0){
+        html += '<div class="empty-note">Sin actividad registrada este mes.</div>';
+      } else {
+        html += '<div class="metric-row" style="margin-bottom:10px;">';
+        html += '<div class="metric-card" style="padding:10px 12px;"><div class="metric-label" style="font-size:11px;">Prioritarios</div><div class="metric-value" style="font-size:26px;">'+prioPct+'%</div></div>';
+        html += '<div class="metric-card" style="padding:10px 12px;"><div class="metric-label" style="font-size:11px;">General</div><div class="metric-value" style="font-size:16px;">'+pct+'%</div></div>';
+        html += '</div>';
+
+        if(priorityItems.length){
+          html += '<button class="link-btn" data-toggleprio="'+mk+'" style="font-size:12px;margin-bottom:6px;">'+(expandedMonth===mk?'Ocultar detalle de prioritarios':'Ver detalle de prioritarios')+'</button>';
+          if(expandedMonth === mk){
+            priorityItems.forEach(function(item){
+              var req = 0, done = 0;
+              days.forEach(function(d){
+                var key = dateKey(d);
+                if(isBeforeStart(key)) return;
+                if(!isDayRequired(item, d)) return;
+                var rec = entries[key] || {};
+                if(rec[item.id] === 'skip') return;
+                req++;
+                if(rec[item.id] === true) done++;
+              });
+              html += '<div class="prio-row"><span class="priority-dot"></span><span class="prio-name">'+item.label+'</span><span class="prio-ratio">'+done+'/'+req+'</span></div>';
+            });
+          }
+        }
+      }
+      if(monthlyItems.length){
+        monthlyItems.forEach(function(item){
+          var done = !!(monthlyEntries[mk] && monthlyEntries[mk][item.id]);
+          html += '<div class="prio-row"><span class="dot '+(done?'on':'')+'" style="margin-right:2px;"></span><span class="prio-name">'+item.label+'</span><span class="prio-ratio">'+(done?'Hecho':'No hecho')+'</span></div>';
+        });
+      }
+      html += '</div>';
+    });
+    if(!months.length) html = '<div class="empty-note">Todavía no hay historial mensual.</div>';
+    contentEl.innerHTML = html;
+    contentEl.querySelectorAll('[data-toggleprio]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var mk = btn.getAttribute('data-toggleprio');
+        expandedMonth = (expandedMonth === mk) ? null : mk;
+        renderMeses();
+      });
+    });
+  }
+
   function render(){
+    contentEl.className = '';
     if(!settings.startDate){ renderStartScreen(); return; }
     if(currentTab === 'hoy'){ renderHoy(); }
     else if(currentTab === 'semana'){ renderSemana(); }
-    else { renderResumen(); }
+    else if(currentTab === 'resumen'){ renderResumen(); }
+    else { renderMeses(); }
   }
 
   function setActiveTab(tab, btn){
@@ -1275,6 +1442,7 @@
   document.getElementById('tab-hoy').addEventListener('click', function(){ setActiveTab('hoy', this); });
   document.getElementById('tab-semana').addEventListener('click', function(){ setActiveTab('semana', this); });
   document.getElementById('tab-resumen').addEventListener('click', function(){ setActiveTab('resumen', this); });
+  document.getElementById('tab-meses').addEventListener('click', function(){ setActiveTab('meses', this); });
 
   var pendingImport = null;
   var importPanel = document.getElementById('import-panel');
