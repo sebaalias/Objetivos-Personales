@@ -385,6 +385,13 @@
     background:repeating-linear-gradient(45deg, rgba(122,58,58,0.5), rgba(122,58,58,0.5) 2px, transparent 2px, transparent 4px);
     border-color:rgba(122,58,58,0.6);
   }
+  .dot-btn.optional{
+    border-style:dashed;
+    opacity:0.6;
+  }
+  .dot-btn.optional.on{
+    opacity:1;
+  }
   .item-tag{
     font-family:'IBM Plex Mono',monospace;
     font-size:10px;
@@ -724,8 +731,16 @@
     return null;
   }
 
-  function computeStreak(itemId, days){
-    if(!days) return 0;
+  function isDayCounted(item, d, key){
+    var rec = entries[key] || {};
+    var val = rec[item.id];
+    if(val === 'skip') return false;
+    if(isDayRequired(item, d)) return true;
+    return val === true;
+  }
+
+  function computeStreak(item){
+    var itemId = item.id;
     var streak = 0;
     var d = new Date();
     var tKey = todayKey();
@@ -736,14 +751,19 @@
       guard++;
       var kCheck = dateKey(d);
       if(isBeforeStart(kCheck)) break;
-      if(days.indexOf(d.getDay()) === -1){ d.setDate(d.getDate()-1); continue; }
       var key = dateKey(d);
       var val = entries[key] && entries[key][itemId];
-      if(val === 'skip'){ d.setDate(d.getDate()-1); continue; }
+      var required = isDayRequired(item, d);
       if(val === true){
         streak++;
         d.setDate(d.getDate()-1);
-      } else { break; }
+        continue;
+      }
+      if(required){
+        if(val === 'skip'){ d.setDate(d.getDate()-1); continue; }
+        break;
+      }
+      d.setDate(d.getDate()-1);
     }
     return streak;
   }
@@ -755,8 +775,7 @@
     config.forEach(function(cat){
       cat.items.forEach(function(item){
         if(item.frequency === 'monthly') return;
-        if(!isDayRequired(item, d)) return;
-        if(rec[item.id] === 'skip') return;
+        if(!isDayCounted(item, d, key)) return;
         total++;
         if(rec[item.id] === true) done++;
       });
@@ -783,8 +802,7 @@
       config.forEach(function(cat){
         cat.items.forEach(function(item){
           if(item.frequency === 'monthly') return;
-          if(!isDayRequired(item, d)) return;
-          if(rec[item.id] === 'skip') return;
+          if(!isDayCounted(item, d, key)) return;
           totalReq++;
           if(rec[item.id] === true) totalDone++;
           if(item.priority){
@@ -1063,7 +1081,7 @@
     config.forEach(function(cat, catIdx){
       var rec = entries[key] || {};
       var dailyItems = cat.items.filter(function(i){ return i.frequency !== 'monthly'; });
-      var requiredToday = dailyItems.filter(function(i){ return isDayRequired(i, todayDate) && rec[i.id] !== 'skip'; });
+      var requiredToday = dailyItems.filter(function(i){ return isDayCounted(i, todayDate, key); });
       var catDone = 0;
       requiredToday.forEach(function(i){ if(rec[i.id] === true) catDone++; });
       html += '<div class="card">';
@@ -1104,7 +1122,7 @@
         var rawState = isMonthly ? null : rec[item.id];
         var checked = isMonthly ? !!(monthlyEntries[mk] && monthlyEntries[mk][item.id]) : rawState === true;
         var excludedToday = rawState === 'skip';
-        var streak = isMonthly ? 0 : computeStreak(item.id, item.days || ALL_DAYS);
+        var streak = isMonthly ? 0 : computeStreak(item);
         var notRequiredToday = !isMonthly && !isNoSchedule && !isDayRequired(item, todayDate);
         var tag = daysTagText(item);
 
@@ -1324,7 +1342,7 @@
   function renderSemana(){
     var days = last7Days();
     var html = '<div class="empty-note" style="padding:0 0 12px;text-align:left;">'+
-      '<span class="priority-dot" style="margin-right:5px;"></span>negrita = prioritario &nbsp;&nbsp;<span class="dot na" style="width:9px;height:9px;vertical-align:-1px;"></span> no obligatorio ese día &nbsp;&nbsp;toc\u00e1 un punto: hecho \u2192 excepci\u00f3n (feriado, etc.) \u2192 vac\u00edo</div>';
+      '<span class="priority-dot" style="margin-right:5px;"></span>negrita = prioritario &nbsp;&nbsp;<span class="dot-btn optional" style="width:9px;height:9px;vertical-align:-1px;display:inline-block;"></span> día no obligatorio (igual podés tildarlo) &nbsp;&nbsp;toc\u00e1 un punto: hecho \u2192 excepci\u00f3n (feriado, etc.) \u2192 vac\u00edo</div>';
     html += '<div class="card"><table class="hist-table"><thead><tr><th class="hist-item-label"></th>';
     days.forEach(function(d){
       html += '<th>'+WEEKDAYS[d.getDay()]+'<br>'+d.getDate()+'</th>';
@@ -1338,15 +1356,17 @@
         html += '<tr><td class="hist-item-label'+(item.priority?' is-priority':'')+'">'+item.label+'</td>';
         days.forEach(function(d){
           var key = dateKey(d);
-          var required = isDayRequired(item, d) && !isBeforeStart(key);
-          if(!required){
+          if(isBeforeStart(key)){
             html += '<td><span class="dot na"></span></td>';
-          } else {
-            var state = entries[key] && entries[key][item.id];
-            var cls = state === true ? 'on' : (state === 'skip' ? 'skip' : '');
-            var label = state === true ? 'hecho' : (state === 'skip' ? 'excepción' : 'sin marcar');
-            html += '<td><button class="dot-btn '+cls+'" data-toggleitem="'+item.id+'" data-toggledate="'+key+'" aria-label="'+item.label+' '+key+' ('+label+')"></button></td>';
+            return;
           }
+          var required = isDayRequired(item, d);
+          var state = entries[key] && entries[key][item.id];
+          var cls = state === true ? 'on' : (state === 'skip' ? 'skip' : '');
+          if(!required) cls += ' optional';
+          var label = state === true ? 'hecho' : (state === 'skip' ? 'excepción' : 'sin marcar');
+          if(!required) label += ', no obligatorio';
+          html += '<td><button class="dot-btn '+cls+'" data-toggleitem="'+item.id+'" data-toggledate="'+key+'" data-required="'+(required?'1':'0')+'" aria-label="'+item.label+' '+key+' ('+label+')"></button></td>';
         });
         html += '</tr>';
       });
@@ -1357,11 +1377,17 @@
       btn.addEventListener('click', function(){
         var itemId = btn.getAttribute('data-toggleitem');
         var key = btn.getAttribute('data-toggledate');
+        var required = btn.getAttribute('data-required') === '1';
         if(!entries[key]) entries[key] = {};
         var cur = entries[key][itemId];
-        if(cur === true){ entries[key][itemId] = 'skip'; }
-        else if(cur === 'skip'){ delete entries[key][itemId]; }
-        else { entries[key][itemId] = true; }
+        if(required){
+          if(cur === true){ entries[key][itemId] = 'skip'; }
+          else if(cur === 'skip'){ delete entries[key][itemId]; }
+          else { entries[key][itemId] = true; }
+        } else {
+          if(cur === true){ delete entries[key][itemId]; }
+          else { entries[key][itemId] = true; }
+        }
         saveEntries();
         renderSemana();
       });
@@ -1391,13 +1417,12 @@
         days.forEach(function(d){
           var key = dateKey(d);
           if(isBeforeStart(key)) return;
-          if(!isDayRequired(item, d)) return;
+          if(!isDayCounted(item, d, key)) return;
           var rec = entries[key] || {};
-          if(rec[item.id] === 'skip') return;
           req++;
           if(rec[item.id] === true) done++;
         });
-        var streak = computeStreak(item.id, item.days || ALL_DAYS);
+        var streak = computeStreak(item);
         html += '<div class="prio-row"><span class="priority-dot"></span><span class="prio-name">'+item.label+'</span><span class="prio-ratio">'+done+'/'+req+' \u00b7 '+streak+'d racha</span></div>';
       });
     });
@@ -1454,9 +1479,8 @@
           var req = 0, done = 0;
           allDays.forEach(function(d){
             var key = dateKey(d);
-            if(!isDayRequired(item, d)) return;
+            if(!isDayCounted(item, d, key)) return;
             var rec = entries[key] || {};
-            if(rec[item.id] === 'skip') return;
             req++;
             if(rec[item.id] === true) done++;
           });
@@ -1491,9 +1515,8 @@
               days.forEach(function(d){
                 var key = dateKey(d);
                 if(isBeforeStart(key)) return;
-                if(!isDayRequired(item, d)) return;
+                if(!isDayCounted(item, d, key)) return;
                 var rec = entries[key] || {};
-                if(rec[item.id] === 'skip') return;
                 req++;
                 if(rec[item.id] === true) done++;
               });
