@@ -78,6 +78,21 @@
     color:var(--ink);
     border-color:var(--paper);
   }
+  .subtabs{
+    margin-top:-10px;
+    margin-bottom:20px;
+  }
+  .subtabs .tab{
+    font-size:12px;
+    padding:6px 12px;
+    border-color:rgba(237,231,214,0.15);
+    color:rgba(237,231,214,0.55);
+  }
+  .subtabs .tab.active{
+    background:transparent;
+    color:var(--gold);
+    border-color:var(--gold);
+  }
   .gauge-wrap{
     display:flex;
     align-items:center;
@@ -213,7 +228,7 @@
   .empty-note{
     font-size:13px;
     color:rgba(237,231,214,0.6);
-    text-align:center;
+    text-align:left;
     padding:20px 0;
   }
   .add-link{
@@ -574,11 +589,206 @@
     border-radius:10px;
     padding:14px 16px;
   }
+  .field-label{
+    display:block;
+    font-size:12px;
+    color:var(--ink-soft);
+    font-weight:600;
+    margin:12px 0 4px;
+  }
+  .field-input, .field-textarea{
+    width:100%;
+    font-family:'Inter',sans-serif;
+    font-size:14px;
+    padding:9px 10px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:#fff;
+    color:var(--ink);
+  }
+  .field-textarea{resize:vertical;min-height:60px;line-height:1.4;font-family:inherit;}
+  .field-row2{display:flex;gap:10px;}
+  .field-row2 > div{flex:1;}
+  .health-actions{
+    display:flex;
+    gap:10px;
+    margin-top:14px;
+    flex-wrap:wrap;
+  }
+  .health-save-btn{
+    flex:1;
+    min-width:120px;
+    padding:11px 16px;
+    font-size:14px;
+    border-radius:8px;
+    border:1px solid var(--ocean-dark);
+    background:var(--ocean);
+    color:var(--paper);
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+    font-weight:500;
+  }
+  .health-cancel-btn{
+    padding:11px 16px;
+    font-size:14px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--ink-soft);
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+  .ai-btn-row{
+    display:flex;
+    gap:8px;
+    margin-top:16px;
+    flex-wrap:wrap;
+  }
+  .ai-btn{
+    flex:1;
+    min-width:130px;
+    padding:11px 14px;
+    font-size:13.5px;
+    border-radius:8px;
+    border:1px solid var(--gold);
+    background:var(--gold);
+    color:var(--ink);
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+  }
+  .ai-btn.secondary{
+    background:transparent;
+    color:var(--paper);
+    border-color:rgba(237,231,214,0.3);
+  }
+  .goal-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:9px 0;
+    border-bottom:1px solid var(--line);
+    font-size:13.5px;
+  }
+  .goal-row:last-child{border-bottom:none;}
+  .goal-main{flex:1;}
+  .goal-label{font-weight:600;}
+  .goal-detail{
+    display:block;
+    font-size:12px;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono',monospace;
+    margin-top:2px;
+  }
+  .entry-row{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:9px 0;
+    border-bottom:1px solid var(--line);
+    font-size:13px;
+  }
+  .entry-row:last-child{border-bottom:none;}
+  .entry-time{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ocean-dark);
+    min-width:38px;
+    padding-top:1px;
+  }
+  .entry-main{flex:1;}
+  .entry-macros{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+  .totals-card{
+    background:var(--paper);
+    border-radius:10px;
+    padding:14px 16px;
+  }
+  .field-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin:12px 0 4px;
+  }
+  .field-header .field-label{margin:0;}
+  .na-toggle{
+    font-size:10.5px;
+    font-family:'IBM Plex Mono',monospace;
+    padding:2px 8px;
+    border-radius:10px;
+    border:1px dashed rgba(27,43,36,0.28);
+    background:transparent;
+    color:var(--ink-soft);
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .na-toggle.active{
+    border-style:solid;
+    border-color:var(--gold);
+    color:var(--gold);
+    background:rgba(185,134,46,0.12);
+  }
+  .field-input:disabled{
+    opacity:0.45;
+    text-decoration:line-through;
+    background:rgba(27,43,36,0.03);
+  }
+  .total-block{
+    padding:8px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .total-block:last-child{border-bottom:none;}
+  .total-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+  }
+  .total-label{font-size:13px;color:var(--ink-soft);}
+  .total-value{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;}
+  .total-sub{
+    font-size:11px;
+    color:var(--ink-soft);
+    text-align:right;
+    margin-top:2px;
+  }
+  .day-status{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:12px;
+    padding:4px 10px;
+    border-radius:12px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .day-status.open{background:rgba(47,111,143,0.15);color:var(--ocean-dark);}
+  .day-status.closed{background:rgba(185,134,46,0.18);color:var(--gold);}
+  .day-status.empty{background:rgba(27,43,36,0.08);color:var(--ink-soft);}
+  .toast{
+    position:fixed;
+    bottom:24px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--gold);
+    color:var(--ink);
+    padding:10px 18px;
+    border-radius:20px;
+    font-size:13px;
+    font-family:'Inter',sans-serif;
+    font-weight:500;
+    box-shadow:0 4px 14px rgba(0,0,0,0.3);
+    z-index:999;
+  }
   @media (max-width:480px){
     .app{padding:20px 12px 40px;}
     .card{padding:14px 14px 6px;}
     .masthead h1{font-size:21px;}
     .hist-table{font-size:10px;}
+    .metric-row{flex-direction:column;}
   }
 </style>
 </head>
@@ -589,11 +799,10 @@
     <div class="date" id="date-label">—</div>
   </div>
   <div class="tabs" id="tabs" style="display:none;">
-    <button class="tab active" id="tab-hoy">Hoy</button>
-    <button class="tab" id="tab-semana">Semana</button>
-    <button class="tab" id="tab-resumen">Resumen</button>
-    <button class="tab" id="tab-meses">Meses</button>
+    <button class="tab active" id="tab-main-objetivos">Objetivos</button>
+    <button class="tab" id="tab-main-salud">Salud</button>
   </div>
+  <div class="tabs subtabs" id="subtabs"></div>
   <div id="content" class="loading">Cargando…</div>
   <div class="backup-row">
     <button class="link-btn" id="export-btn">Exportar copia</button>
@@ -609,6 +818,29 @@
   var ENTRIES_KEY = 'op_entries';
   var SETTINGS_KEY = 'op_settings';
   var MONTHLY_KEY = 'op_monthly';
+  var GOALS_KEY = 'op_goals';
+  var HEALTH_KEY = 'op_health';
+  var PARAMS_KEY = 'op_params';
+
+  function defaultGoals(){
+    return [
+      {id:'peso', label:'Peso', target:'76 kg', date:'2026-09-18'},
+      {id:'calorias', label:'Calorías', target:'1700–1800 kcal/día', date:''},
+      {id:'proteina', label:'Proteína', target:'120–130 g/día', date:''},
+      {id:'hidratacion', label:'Hidratación', target:'2–2.5 L/día', date:''}
+    ];
+  }
+  function defaultParamsNotes(){
+    return 'Objetivo: llegar en la mejor forma física posible al 18/09; esfuerzo alto pero sostenible.\n'+
+      'Objetivo corporal: bajar grasa (especialmente abdominal) preservando/ganando masa muscular, manteniendo agilidad y rendimiento para surf.\n'+
+      'Altura: 175.5 cm.\n'+
+      'Rutina matutina: 3 series de 10 flexiones, 10 sentadillas, 20 abdominales/crunches, 15 espinales alternados.\n'+
+      'Creatina: monohidrato Star Nutrition, 5 g/día.\n'+
+      'Whey: Gold Nutrition 100% Whey Protein Pure Unflavored, ~28 g proteína por scoop.\n'+
+      'Hydromax: reservado para sesiones de natación/intensidad, no como bebida rutinaria.\n'+
+      'Alimentos habituales: pan Mi Mago Doble integral, Port Salut Maricré, yogur griego La Serenísima, granola GoNatural Crunch, leche descremada.\n'+
+      'Preferencia: no le gusta el arroz.';
+  }
 
   var ALL_DAYS = [0,1,2,3,4,5,6];
   var WEEKDAYS_ONLY = [1,2,3,4,5];
@@ -658,6 +890,9 @@
   var entries = {};
   var monthlyEntries = {};
   var settings = {startDate:null};
+  var goals = [];
+  var health = {};
+  var params = {notes:''};
   var currentTab = 'hoy';
   var openAddItemFor = null;
   var openAddCategory = false;
@@ -667,6 +902,20 @@
   var expandedMonth = null;
   var editingItemLabelFor = null;
   var editingCatTitleFor = null;
+  var openAddGoal = false;
+  var editingGoal = null;
+  var confirmDeleteGoal = null;
+  var confirmDeleteHealth = null;
+  var healthViewKey = null;
+  var openAddFood = false;
+  var openAddTraining = false;
+  var addFoodError = {msg:null};
+  var addTrainingError = {msg:null};
+  var editingFoodId = null;
+  var editingTrainingId = null;
+  var editingSupplementId = null;
+  var openAddSupplement = false;
+  var addSupplementError = {msg:null};
   var contentEl = document.getElementById('content');
   var dateLabelEl = document.getElementById('date-label');
   var tabsEl = document.getElementById('tabs');
@@ -908,6 +1157,24 @@
     try{ localStorage.setItem(MONTHLY_KEY, JSON.stringify(monthlyEntries)); }
     catch(e){ console.error('No se pudo guardar', e); storageOk = false; }
   }
+  function saveGoals(){
+    try{ localStorage.setItem(GOALS_KEY, JSON.stringify(goals)); }
+    catch(e){ console.error('No se pudo guardar', e); storageOk = false; }
+  }
+  function saveHealth(){
+    try{ localStorage.setItem(HEALTH_KEY, JSON.stringify(health)); }
+    catch(e){ console.error('No se pudo guardar', e); storageOk = false; }
+  }
+  function saveParams(){
+    try{ localStorage.setItem(PARAMS_KEY, JSON.stringify(params)); }
+    catch(e){ console.error('No se pudo guardar', e); storageOk = false; }
+  }
+  function daysUntil(dateStr){
+    if(!dateStr) return null;
+    var target = parseKey(dateStr);
+    var today = parseKey(todayKey());
+    return Math.round((target - today) / 86400000);
+  }
 
   function toggleItem(itemId){
     var key = todayKey();
@@ -1044,6 +1311,276 @@
   var addItemError = {msg:null};
   var addCatError = {msg:null};
 
+  // ---------- SALUD: metas ----------
+  function addGoal(label, target, date, errorHolder){
+    label = (label||'').trim();
+    if(!label){ errorHolder.msg = 'Escribí un nombre para la meta.'; render(); return; }
+    var id = uniqueId(slugify(label));
+    goals.push({id:id, label:label, target:(target||'').trim(), date:(date||'').trim()});
+    openAddGoal = false;
+    saveGoals();
+    render();
+  }
+  function updateGoal(id, label, target, date){
+    var g = goals.find(function(x){ return x.id===id; });
+    if(!g) return;
+    g.label = (label||'').trim() || g.label;
+    g.target = (target||'').trim();
+    g.date = (date||'').trim();
+    editingGoal = null;
+    saveGoals();
+    render();
+  }
+  function deleteGoalConfirmed(id){
+    goals = goals.filter(function(g){ return g.id !== id; });
+    confirmDeleteGoal = null;
+    saveGoals();
+    render();
+  }
+
+  // ---------- SALUD: registro diario ----------
+  var NA_FIELDS = ['peso','cintura','sueno','hidratacion'];
+  function emptyHealthEntry(){
+    return {peso:'', cintura:'', sueno:'', hidratacion:'', sensaciones:'', cerrado:false, na:{}, comidas:[], entrenamientos:[], suplementos:[]};
+  }
+  function getHealthDay(key){
+    if(!health[key]) health[key] = emptyHealthEntry();
+    if(!health[key].comidas) health[key].comidas = [];
+    if(!health[key].entrenamientos) health[key].entrenamientos = [];
+    if(!Array.isArray(health[key].suplementos)) health[key].suplementos = [];
+    if(!health[key].na) health[key].na = {};
+    return health[key];
+  }
+  function toggleFieldNA(key, field){
+    var day = getHealthDay(key);
+    day.na[field] = !day.na[field];
+    if(day.na[field]) day[field] = '';
+    saveHealth();
+    render();
+  }
+  function nowTime(){
+    var d = new Date();
+    return (d.getHours()<10?'0':'')+d.getHours()+':'+(d.getMinutes()<10?'0':'')+d.getMinutes();
+  }
+  function newEntryId(){
+    return 'e' + Date.now() + Math.floor(Math.random()*1000);
+  }
+  function addFoodEntry(key, texto, calorias, proteina, hora){
+    texto = (texto||'').trim();
+    if(!texto) return false;
+    var day = getHealthDay(key);
+    day.comidas.push({id:newEntryId(), hora:hora||nowTime(), texto:texto, calorias:(calorias||'').toString().trim(), proteina:(proteina||'').toString().trim()});
+    saveHealth();
+    return true;
+  }
+  function addTrainingEntry(key, texto, calorias, hora){
+    texto = (texto||'').trim();
+    if(!texto) return false;
+    var day = getHealthDay(key);
+    day.entrenamientos.push({id:newEntryId(), hora:hora||nowTime(), texto:texto, calorias:(calorias||'').toString().trim()});
+    saveHealth();
+    return true;
+  }
+  function addSupplementEntry(key, texto, calorias, proteina, hora){
+    texto = (texto||'').trim();
+    if(!texto) return false;
+    var day = getHealthDay(key);
+    day.suplementos.push({id:newEntryId(), hora:hora||nowTime(), texto:texto, calorias:(calorias||'').toString().trim(), proteina:(proteina||'').toString().trim()});
+    saveHealth();
+    return true;
+  }
+  function deleteSupplementEntry(key, id){
+    var day = getHealthDay(key);
+    day.suplementos = day.suplementos.filter(function(e){ return e.id !== id; });
+    saveHealth();
+  }
+  function updateSupplementEntry(key, id, texto, calorias, proteina){
+    var day = getHealthDay(key);
+    var e = day.suplementos.find(function(x){ return x.id===id; });
+    if(!e) return;
+    e.texto = (texto||'').trim() || e.texto;
+    e.calorias = (calorias||'').toString().trim();
+    e.proteina = (proteina||'').toString().trim();
+    saveHealth();
+  }
+  function deleteFoodEntry(key, id){
+    var day = getHealthDay(key);
+    day.comidas = day.comidas.filter(function(e){ return e.id !== id; });
+    saveHealth();
+  }
+  function deleteTrainingEntry(key, id){
+    var day = getHealthDay(key);
+    day.entrenamientos = day.entrenamientos.filter(function(e){ return e.id !== id; });
+    saveHealth();
+  }
+  function updateFoodEntry(key, id, texto, calorias, proteina){
+    var day = getHealthDay(key);
+    var e = day.comidas.find(function(x){ return x.id===id; });
+    if(!e) return;
+    e.texto = (texto||'').trim() || e.texto;
+    e.calorias = (calorias||'').toString().trim();
+    e.proteina = (proteina||'').toString().trim();
+    saveHealth();
+  }
+  function updateTrainingEntry(key, id, texto, calorias){
+    var day = getHealthDay(key);
+    var e = day.entrenamientos.find(function(x){ return x.id===id; });
+    if(!e) return;
+    e.texto = (texto||'').trim() || e.texto;
+    e.calorias = (calorias||'').toString().trim();
+    saveHealth();
+  }
+  function saveHealthBasics(key, data){
+    var day = getHealthDay(key);
+    NA_FIELDS.forEach(function(f){
+      day[f] = day.na[f] ? '' : data[f];
+    });
+    day.sensaciones = data.sensaciones;
+    saveHealth();
+  }
+  function setDayClosed(key, closed){
+    var day = getHealthDay(key);
+    day.cerrado = closed;
+    saveHealth();
+  }
+  function deleteHealthConfirmed(key){
+    delete health[key];
+    confirmDeleteHealth = null;
+    saveHealth();
+    render();
+  }
+  function dayTotals(day){
+    var cal = 0, prot = 0;
+    (day.comidas||[]).forEach(function(e){ if(e.calorias) cal += parseFloat(e.calorias)||0; if(e.proteina) prot += parseFloat(e.proteina)||0; });
+    (day.suplementos||[]).forEach(function(e){ if(e.calorias) cal += parseFloat(e.calorias)||0; if(e.proteina) prot += parseFloat(e.proteina)||0; });
+    return {calorias: cal, proteina: prot};
+  }
+  function dayStatusInfo(day){
+    var hasData = day.peso || day.cintura || day.sueno || day.hidratacion || day.sensaciones || (day.comidas&&day.comidas.length) || (day.entrenamientos&&day.entrenamientos.length) || (day.suplementos&&day.suplementos.length);
+    if(!hasData) return {label:'Sin registrar', cls:'empty'};
+    if(day.cerrado) return {label:'Cerrado', cls:'closed'};
+    return {label:'En curso', cls:'open'};
+  }
+  function parseGoalRange(target){
+    if(!target) return null;
+    var nums = (target.match(/[\d.]+/g)||[]).map(Number);
+    if(!nums.length) return null;
+    if(nums.length>=2) return {min:nums[0], max:nums[1]};
+    return {min:nums[0], max:nums[0]};
+  }
+  function findGoal(pattern){
+    return goals.find(function(g){ return pattern.test(g.label); });
+  }
+  function progressAgainst(total, range, unit){
+    if(!range) return '';
+    if(total < range.min) return 'faltan ' + Math.round(range.min-total) + ' ' + unit + ' para el mínimo';
+    if(total > range.max) return Math.round(total-range.max) + ' ' + unit + ' por encima del máximo';
+    return 'dentro del objetivo';
+  }
+
+  function buildSummaryText(key){
+    var h = health[key] || emptyHealthEntry();
+    var totals = dayTotals(h);
+    var status = dayStatusInfo(h);
+    var d = parseKey(key);
+    var lines = [];
+    lines.push('Resumen del ' + d.getDate() + ' de ' + MONTHS[d.getMonth()] + ' (' + status.label + '):');
+    if(h.peso) lines.push('Peso: ' + h.peso + ' kg');
+    if(h.cintura) lines.push('Cintura: ' + h.cintura + ' cm');
+    if(h.sueno) lines.push('Sueño: ' + h.sueno);
+    lines.push('');
+    lines.push('Comidas del día:');
+    if(h.comidas && h.comidas.length){
+      h.comidas.forEach(function(e){
+        var macro = [];
+        if(e.calorias) macro.push(e.calorias+' kcal');
+        if(e.proteina) macro.push(e.proteina+'g prot');
+        lines.push('- ' + e.hora + ' ' + e.texto + (macro.length? ' ('+macro.join(', ')+')' : ''));
+      });
+    } else {
+      lines.push('- no se cargó ninguna comida todavía');
+    }
+    lines.push('Total estimado por mí: ' + totals.calorias + ' kcal, ' + totals.proteina + ' g de proteína');
+    lines.push('');
+    lines.push('Entrenamiento del día:');
+    if(h.entrenamientos && h.entrenamientos.length){
+      h.entrenamientos.forEach(function(e){
+        lines.push('- ' + e.hora + ' ' + e.texto + (e.calorias? ' ('+e.calorias+' kcal activas)':''));
+      });
+    } else {
+      lines.push('- no se registró actividad todavía');
+    }
+    if(h.hidratacion) lines.push('\nHidratación: ' + h.hidratacion);
+    if(h.suplementos && h.suplementos.length){
+      lines.push('Suplementos:');
+      h.suplementos.forEach(function(e){
+        var macro = [];
+        if(e.calorias) macro.push(e.calorias+' kcal');
+        if(e.proteina) macro.push(e.proteina+'g prot');
+        lines.push('- ' + e.hora + ' ' + e.texto + (macro.length? ' ('+macro.join(', ')+')' : ''));
+      });
+    }
+    if(h.sensaciones) lines.push('Sensaciones/observaciones: ' + h.sensaciones);
+    if(goals.length){
+      lines.push('');
+      lines.push('Mis objetivos actuales:');
+      goals.forEach(function(g){
+        var extra = g.date ? (' (para ' + formatDateHuman(g.date) + ')') : '';
+        lines.push('- ' + g.label + ': ' + (g.target || 'sin definir') + extra);
+      });
+    }
+    if(params.notes){
+      lines.push('');
+      lines.push('Contexto / parámetros:');
+      lines.push(params.notes);
+    }
+    lines.push('');
+    lines.push('¿Podés darme un análisis nutricional aproximado de lo que comí hoy (calorías, proteínas y demás macros), decirme qué me faltaría incorporar para acercarme a mis objetivos, y algún ajuste concreto para lo que me queda del día o para mañana?');
+    return lines.join('\n');
+  }
+
+  function showToast(msg){
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(function(){ t.remove(); }, 2200);
+  }
+  function copySummary(key){
+    var text = buildSummaryText(key);
+    var done = function(){ showToast('Resumen copiado'); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(function(){ fallbackCopy(text, done); });
+    } else {
+      fallbackCopy(text, done);
+    }
+  }
+  function fallbackCopy(text, done){
+    try{
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      done();
+    }catch(e){ showToast('No se pudo copiar, seleccioná el texto a mano'); }
+  }
+  function shareSummary(key){
+    var text = buildSummaryText(key);
+    if(navigator.share){
+      navigator.share({title:'Resumen del día', text:text}).catch(function(){});
+    } else {
+      copySummary(key);
+    }
+  }
+  function showDeleteHealthConfirm(key){
+    if(!confirm('¿Eliminar todo el registro del ' + formatDateHuman(key) + '?')) { return; }
+    deleteHealthConfirmed(key);
+  }
+
   function renderStartScreen(){
     tabsEl.style.display = 'none';
     var html = '<div class="card start-screen">';
@@ -1059,6 +1596,7 @@
       settings.startDate = todayKey();
       saveSettings();
       tabsEl.style.display = 'flex';
+      renderSubTabs();
       render();
     });
   }
@@ -1426,7 +1964,7 @@
         html += '<div class="prio-row"><span class="priority-dot"></span><span class="prio-name">'+item.label+'</span><span class="prio-ratio">'+done+'/'+req+' \u00b7 '+streak+'d racha</span></div>';
       });
     });
-    if(!any) html += '<div class="empty-note">Todavía no marcaste ítems como prioritarios.</div>';
+    if(!any) html += '<div class="empty-note" style="color:var(--ink-soft);">Todavía no marcaste ítems como prioritarios.</div>';
     html += '</div>';
 
     html += '<div class="metric-row">';
@@ -1500,7 +2038,7 @@
       html += '<div class="card">';
       html += '<div class="card-head"><span class="card-title" style="font-size:15px;text-transform:capitalize;">'+label+'</span></div>';
       if(stats.totalReq === 0){
-        html += '<div class="empty-note">Sin actividad registrada este mes.</div>';
+        html += '<div class="empty-note" style="color:var(--ink-soft);">Sin actividad registrada este mes.</div>';
       } else {
         html += '<div class="metric-row" style="margin-bottom:10px;">';
         html += '<div class="metric-card" style="padding:10px 12px;"><div class="metric-label" style="font-size:11px;">Prioritarios</div><div class="metric-value" style="font-size:26px;">'+prioPct+'%</div></div>';
@@ -1544,32 +2082,538 @@
     });
   }
 
-  function render(){
-    contentEl.className = '';
-    if(!settings.startDate){ renderStartScreen(); return; }
-    if(currentTab === 'hoy'){ renderHoy(); }
-    else if(currentTab === 'semana'){ renderSemana(); }
-    else if(currentTab === 'resumen'){ renderResumen(); }
-    else { renderMeses(); }
+  // ---------- SALUD: sub-render Metas ----------
+  function renderMetas(){
+    var html = '';
+    html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Metas</span></div>';
+    goals.forEach(function(g){
+      if(confirmDeleteGoal === g.id){
+        html += '<div class="goal-row"><span class="goal-main">¿Eliminar "'+g.label+'"?</span>';
+        html += '<button class="btn-danger-sm" data-confirmdelgoal="'+g.id+'">Sí</button>';
+        html += '<button class="add-cancel" data-canceldelgoal="'+g.id+'">No</button></div>';
+        return;
+      }
+      if(editingGoal === g.id){
+        html += '<div class="goal-row" style="flex-direction:column;align-items:stretch;">';
+        html += '<input type="text" class="field-input" id="edit-goal-label" value="'+g.label+'" placeholder="Nombre" style="margin-bottom:6px;">';
+        html += '<input type="text" class="field-input" id="edit-goal-target" value="'+g.target+'" placeholder="Valor objetivo" style="margin-bottom:6px;">';
+        html += '<input type="date" class="field-input" id="edit-goal-date" value="'+g.date+'" style="margin-bottom:6px;">';
+        html += '<div class="confirm-actions"><button class="btn-danger" style="background:var(--ocean);border-color:var(--ocean-dark);" data-savegoal="'+g.id+'">Guardar</button><button class="add-cancel" data-canceleditgoal="'+g.id+'">Cancelar</button></div>';
+        html += '</div>';
+        return;
+      }
+      var dleft = daysUntil(g.date);
+      var dateInfo = '';
+      if(g.date){
+        dateInfo = ' · ' + formatDateHuman(g.date) + (dleft!==null ? (dleft>=0 ? ' (faltan '+dleft+'d)' : ' (venció)') : '');
+      }
+      html += '<div class="goal-row"><span class="goal-main"><span class="goal-label">'+g.label+'</span><span class="goal-detail">'+(g.target||'sin definir')+dateInfo+'</span></span>';
+      html += '<span class="row-actions"><button class="icon-btn" data-editgoal="'+g.id+'" aria-label="Editar meta">'+editIcon()+'</button><button class="icon-btn trash-btn" data-delgoal="'+g.id+'" aria-label="Eliminar meta">'+trashIcon()+'</button></span>';
+      html += '</div>';
+    });
+    if(openAddGoal){
+      html += '<div class="add-row" style="flex-direction:column;align-items:stretch;">';
+      html += '<input type="text" class="field-input" id="new-goal-label" placeholder="Nombre (ej. Peso)" style="margin-bottom:6px;">';
+      html += '<input type="text" class="field-input" id="new-goal-target" placeholder="Valor objetivo (ej. 76 kg)" style="margin-bottom:6px;">';
+      html += '<input type="date" class="field-input" id="new-goal-date" style="margin-bottom:6px;">';
+      if(addGoalError.msg) html += '<span class="add-error">'+addGoalError.msg+'</span>';
+      html += '<div class="confirm-actions"><button class="add-confirm" id="confirm-add-goal">Agregar</button><button class="add-cancel" id="cancel-add-goal">Cancelar</button></div>';
+      html += '</div>';
+    } else {
+      html += '<button class="add-link" id="open-add-goal">+ agregar meta</button>';
+    }
+    html += '</div>';
+
+    html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Parámetros y notas</span></div>';
+    html += '<textarea class="field-textarea" id="params-notes" style="min-height:180px;">'+(params.notes||'')+'</textarea>';
+    html += '<div class="health-actions"><button class="health-save-btn" id="save-params">Guardar notas</button></div>';
+    html += '</div>';
+
+    contentEl.innerHTML = html;
+
+    var openGoalBtn = document.getElementById('open-add-goal');
+    if(openGoalBtn) openGoalBtn.addEventListener('click', function(){ openAddGoal = true; addGoalError.msg = null; render(); });
+    var cancelGoalBtn = document.getElementById('cancel-add-goal');
+    if(cancelGoalBtn) cancelGoalBtn.addEventListener('click', function(){ openAddGoal = false; addGoalError.msg = null; render(); });
+    var confirmGoalBtn = document.getElementById('confirm-add-goal');
+    if(confirmGoalBtn) confirmGoalBtn.addEventListener('click', function(){
+      addGoal(document.getElementById('new-goal-label').value, document.getElementById('new-goal-target').value, document.getElementById('new-goal-date').value, addGoalError);
+    });
+    contentEl.querySelectorAll('[data-editgoal]').forEach(function(btn){
+      btn.addEventListener('click', function(){ editingGoal = btn.getAttribute('data-editgoal'); render(); });
+    });
+    contentEl.querySelectorAll('[data-canceleditgoal]').forEach(function(btn){
+      btn.addEventListener('click', function(){ editingGoal = null; render(); });
+    });
+    contentEl.querySelectorAll('[data-savegoal]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-savegoal');
+        updateGoal(id, document.getElementById('edit-goal-label').value, document.getElementById('edit-goal-target').value, document.getElementById('edit-goal-date').value);
+      });
+    });
+    contentEl.querySelectorAll('[data-delgoal]').forEach(function(btn){
+      btn.addEventListener('click', function(){ confirmDeleteGoal = btn.getAttribute('data-delgoal'); render(); });
+    });
+    contentEl.querySelectorAll('[data-confirmdelgoal]').forEach(function(btn){
+      btn.addEventListener('click', function(){ deleteGoalConfirmed(btn.getAttribute('data-confirmdelgoal')); });
+    });
+    contentEl.querySelectorAll('[data-canceldelgoal]').forEach(function(btn){
+      btn.addEventListener('click', function(){ confirmDeleteGoal = null; render(); });
+    });
+    var saveParamsBtn = document.getElementById('save-params');
+    if(saveParamsBtn){
+      saveParamsBtn.addEventListener('click', function(){
+        params.notes = document.getElementById('params-notes').value;
+        saveParams();
+        showToast('Notas guardadas');
+      });
+    }
+  }
+  var addGoalError = {msg:null};
+
+  // ---------- SALUD: sub-render Día ----------
+  function renderDia(){
+    var key = todayKey();
+    var editKey = healthViewKey || key;
+    var day = health[editKey] || emptyHealthEntry();
+    var totals = dayTotals(day);
+    var status = dayStatusInfo(day);
+    var html = '';
+
+    html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">'+formatDateHuman(editKey)+'</span><span class="day-status '+status.cls+'">'+status.label+'</span></div>';
+    html += '<label class="field-label" style="margin-top:0;">Ver / cargar otro día</label><input type="date" class="field-input" id="h-fecha" value="'+editKey+'" max="'+key+'">';
+    html += '</div>';
+
+    html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Datos del día</span></div>';
+    html += '<div class="field-row2"><div>';
+    html += '<div class="field-header"><label class="field-label" style="margin-top:0;">Peso (kg)</label><button class="na-toggle'+(day.na.peso?' active':'')+'" data-natoggle="peso">'+(day.na.peso?'No aplica ✕':'No aplica hoy')+'</button></div>';
+    html += '<input type="number" step="0.1" class="field-input" id="h-peso" value="'+(day.peso||'')+'" placeholder="ej. 80.5"'+(day.na.peso?' disabled':'')+'>';
+    html += '</div><div>';
+    html += '<div class="field-header"><label class="field-label" style="margin-top:0;">Cintura (cm)</label><button class="na-toggle'+(day.na.cintura?' active':'')+'" data-natoggle="cintura">'+(day.na.cintura?'No aplica ✕':'No aplica hoy')+'</button></div>';
+    html += '<input type="number" step="0.5" class="field-input" id="h-cintura" value="'+(day.cintura||'')+'" placeholder="ej. 88"'+(day.na.cintura?' disabled':'')+'>';
+    html += '</div></div>';
+
+    html += '<div class="field-header"><label class="field-label">Sueño</label><button class="na-toggle'+(day.na.sueno?' active':'')+'" data-natoggle="sueno">'+(day.na.sueno?'No aplica ✕':'No aplica hoy')+'</button></div>';
+    html += '<input type="text" class="field-input" id="h-sueno" value="'+(day.sueno||'')+'" placeholder="ej. 7-8 h"'+(day.na.sueno?' disabled':'')+'>';
+
+    html += '<div class="field-header"><label class="field-label">Hidratación (total del día)</label><button class="na-toggle'+(day.na.hidratacion?' active':'')+'" data-natoggle="hidratacion">'+(day.na.hidratacion?'No aplica ✕':'No aplica hoy')+'</button></div>';
+    html += '<input type="text" class="field-input" id="h-hidratacion" value="'+(day.hidratacion||'')+'" placeholder="ej. 2 L"'+(day.na.hidratacion?' disabled':'')+'>';
+
+    html += '<label class="field-label">Sensaciones / observaciones</label><textarea class="field-textarea" id="h-sensaciones" placeholder="Cómo te sentiste, ánimo, algo raro">'+(day.sensaciones||'')+'</textarea>';
+    html += '<div class="health-actions"><button class="health-save-btn" id="save-health">Guardar datos del día</button></div>';
+    html += '</div>';
+
+    html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Comidas de hoy</span></div>';
+    if(day.comidas && day.comidas.length){
+      day.comidas.forEach(function(e){
+        if(editingFoodId === e.id){
+          html += '<div class="entry-row" style="flex-direction:column;align-items:stretch;">';
+          html += '<input type="text" class="field-input" id="edit-food-texto" value="'+e.texto+'" style="margin-bottom:6px;">';
+          html += '<div class="field-row2"><input type="number" class="field-input" id="edit-food-cal" value="'+(e.calorias||'')+'" placeholder="Calorías"><input type="number" class="field-input" id="edit-food-prot" value="'+(e.proteina||'')+'" placeholder="Proteína g"></div>';
+          html += '<div class="confirm-actions" style="margin-top:8px;"><button class="add-confirm" data-savefood="'+e.id+'">Guardar</button><button class="add-cancel" data-canceleditfood="'+e.id+'">Cancelar</button></div>';
+          html += '</div>';
+          return;
+        }
+        var macro = [];
+        if(e.calorias) macro.push(e.calorias+' kcal');
+        if(e.proteina) macro.push(e.proteina+'g prot');
+        html += '<div class="entry-row"><span class="entry-time">'+e.hora+'</span><span class="entry-main">'+e.texto+(macro.length?'<span class="entry-macros">'+macro.join(' · ')+'</span>':'')+'</span>';
+        html += '<span class="row-actions"><button class="icon-btn" data-editfood="'+e.id+'" aria-label="Editar comida">'+editIcon()+'</button><button class="icon-btn trash-btn" data-delfood="'+e.id+'" aria-label="Eliminar comida">'+trashIcon()+'</button></span></div>';
+      });
+    } else {
+      html += '<div class="empty-note" style="padding:8px 0;color:var(--ink-soft);">Todavía no cargaste ninguna comida hoy.</div>';
+    }
+    if(openAddFood){
+      html += '<div class="add-row" style="flex-direction:column;align-items:stretch;">';
+      html += '<input type="text" class="field-input" id="new-food-texto" placeholder="ej. 2 huevos, 3 bananas, 2 peras" style="margin-bottom:6px;">';
+      html += '<div class="field-row2"><input type="number" class="field-input" id="new-food-cal" placeholder="Calorías (opcional)"><input type="number" class="field-input" id="new-food-prot" placeholder="Proteína g (opcional)"></div>';
+      if(addFoodError.msg) html += '<span class="add-error">'+addFoodError.msg+'</span>';
+      html += '<div class="confirm-actions"><button class="add-confirm" id="confirm-add-food">Agregar comida</button><button class="add-cancel" id="cancel-add-food">Cancelar</button></div>';
+      html += '</div>';
+    } else {
+      html += '<button class="add-link" id="open-add-food">+ agregar comida</button>';
+    }
+    html += '</div>';
+
+    html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Suplementos de hoy</span></div>';
+    if(day.suplementos && day.suplementos.length){
+      day.suplementos.forEach(function(e){
+        if(editingSupplementId === e.id){
+          html += '<div class="entry-row" style="flex-direction:column;align-items:stretch;">';
+          html += '<input type="text" class="field-input" id="edit-supp-texto" value="'+e.texto+'" style="margin-bottom:6px;">';
+          html += '<div class="field-row2"><input type="number" class="field-input" id="edit-supp-cal" value="'+(e.calorias||'')+'" placeholder="Calorías"><input type="number" class="field-input" id="edit-supp-prot" value="'+(e.proteina||'')+'" placeholder="Proteína g"></div>';
+          html += '<div class="confirm-actions" style="margin-top:8px;"><button class="add-confirm" data-savesupp="'+e.id+'">Guardar</button><button class="add-cancel" data-canceleditsupp="'+e.id+'">Cancelar</button></div>';
+          html += '</div>';
+          return;
+        }
+        var macro = [];
+        if(e.calorias) macro.push(e.calorias+' kcal');
+        if(e.proteina) macro.push(e.proteina+'g prot');
+        html += '<div class="entry-row"><span class="entry-time">'+e.hora+'</span><span class="entry-main">'+e.texto+(macro.length?'<span class="entry-macros">'+macro.join(' · ')+'</span>':'')+'</span>';
+        html += '<span class="row-actions"><button class="icon-btn" data-editsupp="'+e.id+'" aria-label="Editar suplemento">'+editIcon()+'</button><button class="icon-btn trash-btn" data-delsupp="'+e.id+'" aria-label="Eliminar suplemento">'+trashIcon()+'</button></span></div>';
+      });
+    } else {
+      html += '<div class="empty-note" style="padding:8px 0;color:var(--ink-soft);">Todavía no cargaste ningún suplemento hoy.</div>';
+    }
+    if(openAddSupplement){
+      html += '<div class="add-row" style="flex-direction:column;align-items:stretch;">';
+      html += '<input type="text" class="field-input" id="new-supp-texto" placeholder="ej. 1 scoop whey post-entreno" style="margin-bottom:6px;">';
+      html += '<div class="field-row2"><input type="number" class="field-input" id="new-supp-cal" placeholder="Calorías (opcional)"><input type="number" class="field-input" id="new-supp-prot" placeholder="Proteína g (opcional)"></div>';
+      if(addSupplementError.msg) html += '<span class="add-error">'+addSupplementError.msg+'</span>';
+      html += '<div class="confirm-actions"><button class="add-confirm" id="confirm-add-supp">Agregar suplemento</button><button class="add-cancel" id="cancel-add-supp">Cancelar</button></div>';
+      html += '</div>';
+    } else {
+      html += '<button class="add-link" id="open-add-supp">+ agregar suplemento</button>';
+    }
+    html += '</div>';
+
+    html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Entrenamiento de hoy</span></div>';
+    if(day.entrenamientos && day.entrenamientos.length){
+      day.entrenamientos.forEach(function(e){
+        if(editingTrainingId === e.id){
+          html += '<div class="entry-row" style="flex-direction:column;align-items:stretch;">';
+          html += '<textarea class="field-textarea" id="edit-training-texto" style="margin-bottom:6px;">'+e.texto+'</textarea>';
+          html += '<input type="number" class="field-input" id="edit-training-cal" value="'+(e.calorias||'')+'" placeholder="Calorías activas" style="margin-bottom:6px;">';
+          html += '<div class="confirm-actions"><button class="add-confirm" data-savetraining="'+e.id+'">Guardar</button><button class="add-cancel" data-canceledittraining="'+e.id+'">Cancelar</button></div>';
+          html += '</div>';
+          return;
+        }
+        html += '<div class="entry-row"><span class="entry-time">'+e.hora+'</span><span class="entry-main">'+e.texto+(e.calorias?'<span class="entry-macros">'+e.calorias+' kcal activas</span>':'')+'</span>';
+        html += '<span class="row-actions"><button class="icon-btn" data-edittraining="'+e.id+'" aria-label="Editar entrenamiento">'+editIcon()+'</button><button class="icon-btn trash-btn" data-deltraining="'+e.id+'" aria-label="Eliminar entrenamiento">'+trashIcon()+'</button></span></div>';
+      });
+    } else {
+      html += '<div class="empty-note" style="padding:8px 0;color:var(--ink-soft);">Todavía no registraste actividad hoy.</div>';
+    }
+    if(openAddTraining){
+      html += '<div class="add-row" style="flex-direction:column;align-items:stretch;">';
+      html += '<textarea class="field-textarea" id="new-training-texto" placeholder="Pegá el resumen del reloj o escribí ej. pilates 45 min" style="margin-bottom:6px;"></textarea>';
+      html += '<input type="number" class="field-input" id="new-training-cal" placeholder="Calorías activas (opcional, del reloj)" style="margin-bottom:6px;">';
+      if(addTrainingError.msg) html += '<span class="add-error">'+addTrainingError.msg+'</span>';
+      html += '<div class="confirm-actions"><button class="add-confirm" id="confirm-add-training">Agregar entrenamiento</button><button class="add-cancel" id="cancel-add-training">Cancelar</button></div>';
+      html += '</div>';
+    } else {
+      html += '<button class="add-link" id="open-add-training">+ agregar entrenamiento</button>';
+    }
+    html += '</div>';
+
+    var calGoal = parseGoalRange((findGoal(/calor/i)||{}).target);
+    var protGoal = parseGoalRange((findGoal(/prote/i)||{}).target);
+    html += '<div class="card totals-card"><div class="card-head" style="border:none;padding-bottom:0;margin-bottom:6px;"><span class="card-title" style="font-size:15px;">Acumulado de hoy</span></div>';
+    html += '<div class="total-block"><div class="total-top"><span class="total-label">Calorías</span><span class="total-value">'+totals.calorias+' kcal</span></div>';
+    if(calGoal) html += '<div class="total-sub">'+progressAgainst(totals.calorias, calGoal, 'kcal')+'</div>';
+    html += '</div>';
+    html += '<div class="total-block"><div class="total-top"><span class="total-label">Proteína</span><span class="total-value">'+totals.proteina+' g</span></div>';
+    if(protGoal) html += '<div class="total-sub">'+progressAgainst(totals.proteina, protGoal, 'g')+'</div>';
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="card">';
+    if(status.cls === 'closed'){
+      html += '<div class="empty-note" style="padding:4px 0 12px;color:var(--ink-soft);">Marcaste este día como cerrado.</div>';
+      html += '<div class="health-actions"><button class="health-cancel-btn" id="reopen-day">Reabrir el día</button></div>';
+    } else {
+      html += '<div class="health-actions"><button class="health-save-btn" id="close-day">Cerrar el día (última carga)</button></div>';
+    }
+    html += '<div class="ai-btn-row"><button class="ai-btn" id="copy-summary">Copiar resumen</button><button class="ai-btn secondary" id="share-summary">Compartir</button></div>';
+    if(Object.prototype.hasOwnProperty.call(health, editKey)){
+      html += '<button class="add-link" id="delete-health-current" style="color:var(--coral);margin-top:8px;">Eliminar todo el registro de este día</button>';
+    }
+    html += '</div>';
+
+    contentEl.innerHTML = html;
+
+    document.getElementById('h-fecha').addEventListener('change', function(){
+      healthViewKey = this.value || key;
+      openAddFood = false; openAddTraining = false;
+      render();
+    });
+    contentEl.querySelectorAll('[data-natoggle]').forEach(function(btn){
+      btn.addEventListener('click', function(){ toggleFieldNA(editKey, btn.getAttribute('data-natoggle')); });
+    });
+    document.getElementById('save-health').addEventListener('click', function(){
+      saveHealthBasics(editKey, {
+        peso: document.getElementById('h-peso').value,
+        cintura: document.getElementById('h-cintura').value,
+        sueno: document.getElementById('h-sueno').value,
+        hidratacion: document.getElementById('h-hidratacion').value,
+        suplementos: document.getElementById('h-suplementos').value,
+        sensaciones: document.getElementById('h-sensaciones').value
+      });
+      showToast('Datos guardados');
+      render();
+    });
+
+    var openFoodBtn = document.getElementById('open-add-food');
+    if(openFoodBtn) openFoodBtn.addEventListener('click', function(){ openAddFood = true; addFoodError.msg = null; render(); });
+    var cancelFoodBtn = document.getElementById('cancel-add-food');
+    if(cancelFoodBtn) cancelFoodBtn.addEventListener('click', function(){ openAddFood = false; render(); });
+    var confirmFoodBtn = document.getElementById('confirm-add-food');
+    if(confirmFoodBtn) confirmFoodBtn.addEventListener('click', function(){
+      var ok = addFoodEntry(editKey, document.getElementById('new-food-texto').value, document.getElementById('new-food-cal').value, document.getElementById('new-food-prot').value);
+      if(!ok){ addFoodError.msg = 'Describí qué comiste.'; render(); return; }
+      openAddFood = false;
+      showToast('Comida agregada');
+      render();
+    });
+    contentEl.querySelectorAll('[data-delfood]').forEach(function(btn){
+      btn.addEventListener('click', function(){ deleteFoodEntry(editKey, btn.getAttribute('data-delfood')); render(); });
+    });
+    contentEl.querySelectorAll('[data-editfood]').forEach(function(btn){
+      btn.addEventListener('click', function(){ editingFoodId = btn.getAttribute('data-editfood'); render(); });
+    });
+    contentEl.querySelectorAll('[data-canceleditfood]').forEach(function(btn){
+      btn.addEventListener('click', function(){ editingFoodId = null; render(); });
+    });
+    contentEl.querySelectorAll('[data-savefood]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-savefood');
+        updateFoodEntry(editKey, id, document.getElementById('edit-food-texto').value, document.getElementById('edit-food-cal').value, document.getElementById('edit-food-prot').value);
+        editingFoodId = null;
+        render();
+      });
+    });
+
+    var openTrainingBtn = document.getElementById('open-add-training');
+    if(openTrainingBtn) openTrainingBtn.addEventListener('click', function(){ openAddTraining = true; addTrainingError.msg = null; render(); });
+    var cancelTrainingBtn = document.getElementById('cancel-add-training');
+    if(cancelTrainingBtn) cancelTrainingBtn.addEventListener('click', function(){ openAddTraining = false; render(); });
+    var confirmTrainingBtn = document.getElementById('confirm-add-training');
+    if(confirmTrainingBtn) confirmTrainingBtn.addEventListener('click', function(){
+      var ok = addTrainingEntry(editKey, document.getElementById('new-training-texto').value, document.getElementById('new-training-cal').value);
+      if(!ok){ addTrainingError.msg = 'Describí la actividad.'; render(); return; }
+      openAddTraining = false;
+      showToast('Entrenamiento agregado');
+      render();
+    });
+    contentEl.querySelectorAll('[data-deltraining]').forEach(function(btn){
+      btn.addEventListener('click', function(){ deleteTrainingEntry(editKey, btn.getAttribute('data-deltraining')); render(); });
+    });
+    contentEl.querySelectorAll('[data-edittraining]').forEach(function(btn){
+      btn.addEventListener('click', function(){ editingTrainingId = btn.getAttribute('data-edittraining'); render(); });
+    });
+    contentEl.querySelectorAll('[data-canceledittraining]').forEach(function(btn){
+      btn.addEventListener('click', function(){ editingTrainingId = null; render(); });
+    });
+    contentEl.querySelectorAll('[data-savetraining]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-savetraining');
+        updateTrainingEntry(editKey, id, document.getElementById('edit-training-texto').value, document.getElementById('edit-training-cal').value);
+        editingTrainingId = null;
+        render();
+      });
+    });
+
+    var openSuppBtn = document.getElementById('open-add-supp');
+    if(openSuppBtn) openSuppBtn.addEventListener('click', function(){ openAddSupplement = true; addSupplementError.msg = null; render(); });
+    var cancelSuppBtn = document.getElementById('cancel-add-supp');
+    if(cancelSuppBtn) cancelSuppBtn.addEventListener('click', function(){ openAddSupplement = false; render(); });
+    var confirmSuppBtn = document.getElementById('confirm-add-supp');
+    if(confirmSuppBtn) confirmSuppBtn.addEventListener('click', function(){
+      var ok = addSupplementEntry(editKey, document.getElementById('new-supp-texto').value, document.getElementById('new-supp-cal').value, document.getElementById('new-supp-prot').value);
+      if(!ok){ addSupplementError.msg = 'Describí el suplemento.'; render(); return; }
+      openAddSupplement = false;
+      showToast('Suplemento agregado');
+      render();
+    });
+    contentEl.querySelectorAll('[data-delsupp]').forEach(function(btn){
+      btn.addEventListener('click', function(){ deleteSupplementEntry(editKey, btn.getAttribute('data-delsupp')); render(); });
+    });
+    contentEl.querySelectorAll('[data-editsupp]').forEach(function(btn){
+      btn.addEventListener('click', function(){ editingSupplementId = btn.getAttribute('data-editsupp'); render(); });
+    });
+    contentEl.querySelectorAll('[data-canceleditsupp]').forEach(function(btn){
+      btn.addEventListener('click', function(){ editingSupplementId = null; render(); });
+    });
+    contentEl.querySelectorAll('[data-savesupp]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-savesupp');
+        updateSupplementEntry(editKey, id, document.getElementById('edit-supp-texto').value, document.getElementById('edit-supp-cal').value, document.getElementById('edit-supp-prot').value);
+        editingSupplementId = null;
+        render();
+      });
+    });
+
+    var closeDayBtn = document.getElementById('close-day');
+    if(closeDayBtn) closeDayBtn.addEventListener('click', function(){ setDayClosed(editKey, true); showToast('Día cerrado'); render(); });
+    var reopenDayBtn = document.getElementById('reopen-day');
+    if(reopenDayBtn) reopenDayBtn.addEventListener('click', function(){ setDayClosed(editKey, false); render(); });
+    var delCurrentBtn = document.getElementById('delete-health-current');
+    if(delCurrentBtn) delCurrentBtn.addEventListener('click', function(){ showDeleteHealthConfirm(editKey); });
+    var copyBtn = document.getElementById('copy-summary');
+    if(copyBtn) copyBtn.addEventListener('click', function(){ copySummary(editKey); });
+    var shareBtn = document.getElementById('share-summary');
+    if(shareBtn) shareBtn.addEventListener('click', function(){ shareSummary(editKey); });
   }
 
-  function setActiveTab(tab, btn){
-    currentTab = tab;
-    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  // ---------- SALUD: sub-render Semana (solo datos) ----------
+  function renderSemanaSalud(){
+    var days = last7Days();
+    var html = '<div class="empty-note" style="padding:0 0 12px;text-align:left;">'+
+      '<span class="dot on" style="width:9px;height:9px;vertical-align:-1px;display:inline-block;"></span> cerrado &nbsp;&nbsp;<span class="dot" style="width:9px;height:9px;vertical-align:-1px;display:inline-block;"></span> en curso &nbsp;&nbsp;<span class="dot na" style="width:9px;height:9px;vertical-align:-1px;display:inline-block;"></span> sin registrar</div>';
+    html += '<div class="card"><table class="hist-table"><thead><tr><th class="hist-item-label"></th>';
+    days.forEach(function(d){
+      html += '<th>'+WEEKDAYS[d.getDay()]+'<br>'+d.getDate()+'</th>';
+    });
+    html += '</tr></thead><tbody>';
+
+    var rows = [
+      {label:'Peso', get:function(h){ return h.peso ? h.peso+' kg' : '—'; }},
+      {label:'Cintura', get:function(h){ return h.cintura ? h.cintura+' cm' : '—'; }},
+      {label:'Calorías', get:function(h){ return dayTotals(h).calorias || '—'; }},
+      {label:'Proteína', get:function(h){ var p = dayTotals(h).proteina; return p ? p+'g' : '—'; }},
+      {label:'Hidratación', get:function(h){ return h.hidratacion || '—'; }}
+    ];
+    rows.forEach(function(r){
+      html += '<tr><td class="hist-item-label">'+r.label+'</td>';
+      days.forEach(function(d){
+        var k = dateKey(d);
+        var h = health[k] || emptyHealthEntry();
+        html += '<td>'+r.get(h)+'</td>';
+      });
+      html += '</tr>';
+    });
+
+    html += '<tr><td class="hist-item-label">Estado</td>';
+    days.forEach(function(d){
+      var k = dateKey(d);
+      var h = health[k] || emptyHealthEntry();
+      var status = dayStatusInfo(h);
+      var cls = status.cls === 'closed' ? 'on' : (status.cls === 'empty' ? 'na' : '');
+      html += '<td><span class="dot '+cls+'" title="'+status.label+'"></span></td>';
+    });
+    html += '</tr>';
+
+    html += '</tbody></table></div>';
+    contentEl.innerHTML = html;
+  }
+
+  // ---------- SALUD: sub-render Resumen (evolución, informativa) ----------
+  function renderResumenSalud(){
+    var keys = Object.keys(health).sort();
+    var pesoKeys = keys.filter(function(k){ return health[k].peso; });
+    var cinturaKeys = keys.filter(function(k){ return health[k].cintura; });
+    var html = '';
+
+    html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Evolución</span></div>';
+    if(pesoKeys.length){
+      var firstPesoKey = pesoKeys[0], lastPesoKey = pesoKeys[pesoKeys.length-1];
+      var firstPeso = parseFloat(health[firstPesoKey].peso), lastPeso = parseFloat(health[lastPesoKey].peso);
+      var delta = (lastPeso - firstPeso).toFixed(1);
+      html += '<div class="prio-row"><span class="prio-name">Peso: '+firstPeso+'kg ('+formatDateHuman(firstPesoKey)+') → '+lastPeso+'kg ('+formatDateHuman(lastPesoKey)+')</span><span class="prio-ratio">'+(delta>=0?'+':'')+delta+'kg</span></div>';
+      var pesoGoal = goals.find(function(g){ return g.id==='peso' || /peso/i.test(g.label); });
+      if(pesoGoal){
+        var targetNum = parseFloat(pesoGoal.target);
+        if(!isNaN(targetNum)){
+          var falta = (lastPeso - targetNum).toFixed(1);
+          var dleft = daysUntil(pesoGoal.date);
+          html += '<div class="prio-row"><span class="prio-name">Meta: '+pesoGoal.target+(pesoGoal.date?' para '+formatDateHuman(pesoGoal.date):'')+'</span><span class="prio-ratio">'+(falta>0?'faltan '+falta+'kg':'¡meta alcanzada!')+(dleft!==null&&dleft>=0?' · '+dleft+'d':'')+'</span></div>';
+        }
+      }
+    } else {
+      html += '<div class="empty-note" style="color:var(--ink-soft);">Todavía no cargaste ningún peso en el registro diario.</div>';
+    }
+    if(cinturaKeys.length){
+      var firstCKey = cinturaKeys[0], lastCKey = cinturaKeys[cinturaKeys.length-1];
+      html += '<div class="prio-row"><span class="prio-name">Cintura: '+health[firstCKey].cintura+'cm ('+formatDateHuman(firstCKey)+') → '+health[lastCKey].cintura+'cm ('+formatDateHuman(lastCKey)+')</span></div>';
+    }
+    html += '</div>';
+
+    var days7 = last7Days();
+    var calSum=0, calCount=0, protSum=0, protCount=0, loggedDays=0, closedDays=0;
+    days7.forEach(function(d){
+      var k = dateKey(d);
+      var h = health[k];
+      if(h){
+        var totals = dayTotals(h);
+        var status = dayStatusInfo(h);
+        if(status.cls !== 'empty') loggedDays++;
+        if(status.cls === 'closed') closedDays++;
+        if(totals.calorias){ calSum += totals.calorias; calCount++; }
+        if(totals.proteina){ protSum += totals.proteina; protCount++; }
+      }
+    });
+    html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Últimos 7 días</span></div>';
+    html += '<div class="prio-row"><span class="prio-name">Días con registro cargado</span><span class="prio-ratio">'+loggedDays+'/7</span></div>';
+    html += '<div class="prio-row"><span class="prio-name">Días cerrados</span><span class="prio-ratio">'+closedDays+'/7</span></div>';
+    html += '<div class="prio-row"><span class="prio-name">Promedio calorías (días con dato)</span><span class="prio-ratio">'+(calCount? Math.round(calSum/calCount) : '—')+'</span></div>';
+    html += '<div class="prio-row"><span class="prio-name">Promedio proteína (días con dato)</span><span class="prio-ratio">'+(protCount? Math.round(protSum/protCount)+'g' : '—')+'</span></div>';
+    html += '</div>';
+
+    contentEl.innerHTML = html;
+  }
+
+  var currentMainTab = 'objetivos';
+  var objetivosSubTab = 'hoy';
+  var saludSubTab = 'metas';
+
+  var SUBTABS = {
+    objetivos: [
+      {id:'hoy', label:'Hoy'},
+      {id:'semana', label:'Semana'},
+      {id:'resumen', label:'Resumen'},
+      {id:'meses', label:'Meses'}
+    ],
+    salud: [
+      {id:'metas', label:'Metas'},
+      {id:'dia', label:'Día'},
+      {id:'semana', label:'Semana'},
+      {id:'resumen', label:'Resumen'}
+    ]
+  };
+
+  var subtabsEl = document.getElementById('subtabs');
+
+  function renderSubTabs(){
+    var list = SUBTABS[currentMainTab];
+    var active = currentMainTab === 'objetivos' ? objetivosSubTab : saludSubTab;
+    var html = '';
+    list.forEach(function(t){
+      html += '<button class="tab'+(t.id===active?' active':'')+'" data-subtab="'+t.id+'">'+t.label+'</button>';
+    });
+    subtabsEl.innerHTML = html;
+    subtabsEl.querySelectorAll('[data-subtab]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id = btn.getAttribute('data-subtab');
+        if(currentMainTab === 'objetivos'){ objetivosSubTab = id; } else { saludSubTab = id; }
+        renderSubTabs();
+        render();
+      });
+    });
+  }
+
+  function render(){
+    contentEl.className = '';
+    if(!settings.startDate){ subtabsEl.innerHTML=''; renderStartScreen(); return; }
+    if(currentMainTab === 'objetivos'){
+      currentTab = objetivosSubTab;
+      if(objetivosSubTab === 'hoy'){ renderHoy(); }
+      else if(objetivosSubTab === 'semana'){ renderSemana(); }
+      else if(objetivosSubTab === 'resumen'){ renderResumen(); }
+      else { renderMeses(); }
+    } else {
+      if(saludSubTab === 'metas'){ renderMetas(); }
+      else if(saludSubTab === 'dia'){ renderDia(); }
+      else if(saludSubTab === 'semana'){ renderSemanaSalud(); }
+      else { renderResumenSalud(); }
+    }
+  }
+
+  function setMainTab(tab, btn){
+    currentMainTab = tab;
+    document.querySelectorAll('#tabs .tab').forEach(function(t){ t.classList.remove('active'); });
     btn.classList.add('active');
+    renderSubTabs();
     render();
   }
 
-  document.getElementById('tab-hoy').addEventListener('click', function(){ setActiveTab('hoy', this); });
-  document.getElementById('tab-semana').addEventListener('click', function(){ setActiveTab('semana', this); });
-  document.getElementById('tab-resumen').addEventListener('click', function(){ setActiveTab('resumen', this); });
-  document.getElementById('tab-meses').addEventListener('click', function(){ setActiveTab('meses', this); });
+  document.getElementById('tab-main-objetivos').addEventListener('click', function(){ setMainTab('objetivos', this); });
+  document.getElementById('tab-main-salud').addEventListener('click', function(){ setMainTab('salud', this); });
 
   var pendingImport = null;
   var importPanel = document.getElementById('import-panel');
 
   function exportData(){
-    var payload = {config:config, entries:entries, monthlyEntries:monthlyEntries, settings:settings, exportedAt: todayKey()};
+    var payload = {config:config, entries:entries, monthlyEntries:monthlyEntries, settings:settings, goals:goals, health:health, params:params, exportedAt: todayKey()};
     var blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
@@ -1592,13 +2636,18 @@
       entries = pendingImport.entries || {};
       monthlyEntries = pendingImport.monthlyEntries || {};
       settings = pendingImport.settings || {startDate:null};
-      saveConfig(); saveEntries(); saveMonthly(); saveSettings();
+      goals = pendingImport.goals || defaultGoals();
+      health = pendingImport.health || {};
+      params = pendingImport.params || {notes: defaultParamsNotes()};
+      saveConfig(); saveEntries(); saveMonthly(); saveSettings(); saveGoals(); saveHealth(); saveParams();
       pendingImport = null;
       importPanel.innerHTML = '';
       tabsEl.style.display = settings.startDate ? 'flex' : 'none';
-      currentTab = 'hoy';
-      document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
-      document.getElementById('tab-hoy').classList.add('active');
+      currentMainTab = 'objetivos';
+      objetivosSubTab = 'hoy';
+      document.querySelectorAll('#tabs .tab').forEach(function(t){ t.classList.remove('active'); });
+      document.getElementById('tab-main-objetivos').classList.add('active');
+      renderSubTabs();
       render();
     });
     document.getElementById('cancel-import').addEventListener('click', function(){
@@ -1653,7 +2702,22 @@
       var setRaw = localStorage.getItem(SETTINGS_KEY);
       settings = setRaw ? JSON.parse(setRaw) : {startDate:null};
     }catch(e){ settings = {startDate:null}; storageOk = false; }
+    try{
+      var goalsRaw = localStorage.getItem(GOALS_KEY);
+      goals = goalsRaw ? JSON.parse(goalsRaw) : null;
+    }catch(e){ goals = null; storageOk = false; }
+    if(!goals){ goals = defaultGoals(); saveGoals(); }
+    try{
+      var healthRaw = localStorage.getItem(HEALTH_KEY);
+      health = healthRaw ? JSON.parse(healthRaw) : {};
+    }catch(e){ health = {}; storageOk = false; }
+    try{
+      var paramsRaw = localStorage.getItem(PARAMS_KEY);
+      params = paramsRaw ? JSON.parse(paramsRaw) : null;
+    }catch(e){ params = null; storageOk = false; }
+    if(!params){ params = {notes: defaultParamsNotes()}; saveParams(); }
     if(settings.startDate){ tabsEl.style.display = 'flex'; }
+    renderSubTabs();
     render();
   }
 
