@@ -713,9 +713,11 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
+    gap:8px;
     margin:12px 0 4px;
+    flex-wrap:nowrap;
   }
-  .field-header .field-label{margin:0;}
+  .field-header .field-label{margin:0;flex:1;}
   .na-toggle{
     font-size:10.5px;
     font-family:'IBM Plex Mono',monospace;
@@ -726,6 +728,7 @@
     color:var(--ink-soft);
     cursor:pointer;
     white-space:nowrap;
+    flex-shrink:0;
   }
   .na-toggle.active{
     border-style:solid;
@@ -733,7 +736,7 @@
     color:var(--gold);
     background:rgba(185,134,46,0.12);
   }
-  .field-input:disabled{
+  .field-input:disabled, .field-textarea:disabled{
     opacity:0.45;
     text-decoration:line-through;
     background:rgba(27,43,36,0.03);
@@ -1339,7 +1342,7 @@
   }
 
   // ---------- SALUD: registro diario ----------
-  var NA_FIELDS = ['peso','cintura','sueno','hidratacion'];
+  var NA_FIELDS = ['peso','cintura','sueno','hidratacion','sensaciones'];
   function emptyHealthEntry(){
     return {peso:'', cintura:'', sueno:'', hidratacion:'', sensaciones:'', cerrado:false, na:{}, comidas:[], entrenamientos:[], suplementos:[]};
   }
@@ -1435,7 +1438,6 @@
     NA_FIELDS.forEach(function(f){
       day[f] = day.na[f] ? '' : data[f];
     });
-    day.sensaciones = data.sensaciones;
     saveHealth();
   }
   function setDayClosed(key, closed){
@@ -1450,10 +1452,11 @@
     render();
   }
   function dayTotals(day){
-    var cal = 0, prot = 0;
+    var cal = 0, prot = 0, activas = 0;
     (day.comidas||[]).forEach(function(e){ if(e.calorias) cal += parseFloat(e.calorias)||0; if(e.proteina) prot += parseFloat(e.proteina)||0; });
     (day.suplementos||[]).forEach(function(e){ if(e.calorias) cal += parseFloat(e.calorias)||0; if(e.proteina) prot += parseFloat(e.proteina)||0; });
-    return {calorias: cal, proteina: prot};
+    (day.entrenamientos||[]).forEach(function(e){ if(e.calorias) activas += parseFloat(e.calorias)||0; });
+    return {calorias: cal, proteina: prot, activas: activas};
   }
   function dayStatusInfo(day){
     var hasData = day.peso || day.cintura || day.sueno || day.hidratacion || day.sensaciones || (day.comidas&&day.comidas.length) || (day.entrenamientos&&day.entrenamientos.length) || (day.suplementos&&day.suplementos.length);
@@ -1510,7 +1513,7 @@
     } else {
       lines.push('- no se registró actividad todavía');
     }
-    if(h.hidratacion) lines.push('\nHidratación: ' + h.hidratacion);
+    if(h.hidratacion) lines.push('\nHidratación: ' + h.hidratacion + ' L');
     if(h.suplementos && h.suplementos.length){
       lines.push('Suplementos:');
       h.suplementos.forEach(function(e){
@@ -2129,6 +2132,15 @@
     html += '<div class="health-actions"><button class="health-save-btn" id="save-params">Guardar notas</button></div>';
     html += '</div>';
 
+    html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Referencia general (no personalizada)</span></div>';
+    html += '<div class="empty-note" style="color:var(--ink-soft);padding:0 0 14px;">Fórmulas y rangos típicos de la ciencia del deporte para un cuerpo activo/atlético. No reemplazan una evaluación de un nutricionista o médico deportivo, que sí puede ajustar esto a tu caso puntual (edad, composición corporal, historial). Sirve como punto de partida para entender de dónde salen los números.</div>';
+    html += '<div class="prio-row" style="align-items:flex-start;"><span class="prio-name" style="line-height:1.5;"><b>Gasto basal (TMB)</b> — fórmula Mifflin-St Jeor:<br>Hombres: 10×peso(kg) + 6.25×altura(cm) − 5×edad + 5<br>Mujeres: 10×peso(kg) + 6.25×altura(cm) − 5×edad − 161</span></div>';
+    html += '<div class="prio-row" style="align-items:flex-start;"><span class="prio-name" style="line-height:1.6;"><b>Gasto total (TDEE)</b> = TMB × factor de actividad:<br>Sedentario: ×1.2 &nbsp;·&nbsp; Ejercicio ligero (1–3 días/sem): ×1.375<br>Moderado (3–5 días/sem): ×1.55 &nbsp;·&nbsp; Alto (6–7 días/sem): ×1.725<br>Muy alto (entrenamiento diario intenso): ×1.9</span></div>';
+    html += '<div class="prio-row" style="align-items:flex-start;"><span class="prio-name" style="line-height:1.5;"><b>Proteína</b> para recomposición corporal (bajar grasa manteniendo/ganando músculo) en personas activas: 1.6–2.2 g por kg de peso corporal al día.</span></div>';
+    html += '<div class="prio-row" style="align-items:flex-start;"><span class="prio-name" style="line-height:1.5;"><b>Grasas</b>: 20–35% de las calorías totales del día (evitar bajar de ~20% por salud hormonal).</span></div>';
+    html += '<div class="prio-row" style="align-items:flex-start;border-bottom:none;"><span class="prio-name" style="line-height:1.5;"><b>Carbohidratos</b>: lo que quede de las calorías totales, ajustando hacia arriba en días de más entrenamiento.</span></div>';
+    html += '</div>';
+
     contentEl.innerHTML = html;
 
     var openGoalBtn = document.getElementById('open-add-goal');
@@ -2184,22 +2196,27 @@
     html += '<label class="field-label" style="margin-top:0;">Ver / cargar otro día</label><input type="date" class="field-input" id="h-fecha" value="'+editKey+'" max="'+key+'">';
     html += '</div>';
 
+    function naBtn(field, activeLabel){
+      var isNA = !!day.na[field];
+      return '<button class="na-toggle'+(isNA?' active':'')+'" data-natoggle="'+field+'">'+(isNA?'N/A ✕':'N/A')+'</button>';
+    }
     html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Datos del día</span></div>';
     html += '<div class="field-row2"><div>';
-    html += '<div class="field-header"><label class="field-label" style="margin-top:0;">Peso (kg)</label><button class="na-toggle'+(day.na.peso?' active':'')+'" data-natoggle="peso">'+(day.na.peso?'No aplica ✕':'No aplica hoy')+'</button></div>';
-    html += '<input type="number" step="0.1" class="field-input" id="h-peso" value="'+(day.peso||'')+'" placeholder="ej. 80.5"'+(day.na.peso?' disabled':'')+'>';
+    html += '<div class="field-header"><label class="field-label" style="margin-top:0;">Peso</label>'+naBtn('peso')+'</div>';
+    html += '<input type="number" step="0.1" class="field-input" id="h-peso" value="'+(day.peso||'')+'" placeholder="kg, ej. 80.5"'+(day.na.peso?' disabled':'')+'>';
     html += '</div><div>';
-    html += '<div class="field-header"><label class="field-label" style="margin-top:0;">Cintura (cm)</label><button class="na-toggle'+(day.na.cintura?' active':'')+'" data-natoggle="cintura">'+(day.na.cintura?'No aplica ✕':'No aplica hoy')+'</button></div>';
-    html += '<input type="number" step="0.5" class="field-input" id="h-cintura" value="'+(day.cintura||'')+'" placeholder="ej. 88"'+(day.na.cintura?' disabled':'')+'>';
+    html += '<div class="field-header"><label class="field-label" style="margin-top:0;">Cintura</label>'+naBtn('cintura')+'</div>';
+    html += '<input type="number" step="0.5" class="field-input" id="h-cintura" value="'+(day.cintura||'')+'" placeholder="cm, ej. 88"'+(day.na.cintura?' disabled':'')+'>';
     html += '</div></div>';
 
-    html += '<div class="field-header"><label class="field-label">Sueño</label><button class="na-toggle'+(day.na.sueno?' active':'')+'" data-natoggle="sueno">'+(day.na.sueno?'No aplica ✕':'No aplica hoy')+'</button></div>';
-    html += '<input type="text" class="field-input" id="h-sueno" value="'+(day.sueno||'')+'" placeholder="ej. 7-8 h"'+(day.na.sueno?' disabled':'')+'>';
+    html += '<div class="field-header"><label class="field-label">Sueño (horas)</label>'+naBtn('sueno')+'</div>';
+    html += '<input type="number" step="0.5" class="field-input" id="h-sueno" value="'+(day.sueno||'')+'" placeholder="ej. 7.5"'+(day.na.sueno?' disabled':'')+'>';
 
-    html += '<div class="field-header"><label class="field-label">Hidratación (total del día)</label><button class="na-toggle'+(day.na.hidratacion?' active':'')+'" data-natoggle="hidratacion">'+(day.na.hidratacion?'No aplica ✕':'No aplica hoy')+'</button></div>';
-    html += '<input type="text" class="field-input" id="h-hidratacion" value="'+(day.hidratacion||'')+'" placeholder="ej. 2 L"'+(day.na.hidratacion?' disabled':'')+'>';
+    html += '<div class="field-header"><label class="field-label">Hidratación (L, total del día)</label>'+naBtn('hidratacion')+'</div>';
+    html += '<input type="number" step="0.1" class="field-input" id="h-hidratacion" value="'+(day.hidratacion||'')+'" placeholder="ej. 2"'+(day.na.hidratacion?' disabled':'')+'>';
 
-    html += '<label class="field-label">Sensaciones / observaciones</label><textarea class="field-textarea" id="h-sensaciones" placeholder="Cómo te sentiste, ánimo, algo raro">'+(day.sensaciones||'')+'</textarea>';
+    html += '<div class="field-header"><label class="field-label">Sensaciones / observaciones</label>'+naBtn('sensaciones')+'</div>';
+    html += '<textarea class="field-textarea" id="h-sensaciones" placeholder="Cómo te sentiste, ánimo, algo raro"'+(day.na.sensaciones?' disabled':'')+'>'+(day.sensaciones||'')+'</textarea>';
     html += '<div class="health-actions"><button class="health-save-btn" id="save-health">Guardar datos del día</button></div>';
     html += '</div>';
 
@@ -2299,9 +2316,10 @@
     var calGoal = parseGoalRange((findGoal(/calor/i)||{}).target);
     var protGoal = parseGoalRange((findGoal(/prote/i)||{}).target);
     html += '<div class="card totals-card"><div class="card-head" style="border:none;padding-bottom:0;margin-bottom:6px;"><span class="card-title" style="font-size:15px;">Acumulado de hoy</span></div>';
-    html += '<div class="total-block"><div class="total-top"><span class="total-label">Calorías</span><span class="total-value">'+totals.calorias+' kcal</span></div>';
+    html += '<div class="total-block"><div class="total-top"><span class="total-label">Calorías consumidas</span><span class="total-value">'+totals.calorias+' kcal</span></div>';
     if(calGoal) html += '<div class="total-sub">'+progressAgainst(totals.calorias, calGoal, 'kcal')+'</div>';
     html += '</div>';
+    html += '<div class="total-block"><div class="total-top"><span class="total-label">Calorías activas (entrenamiento)</span><span class="total-value">'+totals.activas+' kcal</span></div></div>';
     html += '<div class="total-block"><div class="total-top"><span class="total-label">Proteína</span><span class="total-value">'+totals.proteina+' g</span></div>';
     if(protGoal) html += '<div class="total-sub">'+progressAgainst(totals.proteina, protGoal, 'g')+'</div>';
     html += '</div>';
@@ -2336,7 +2354,6 @@
         cintura: document.getElementById('h-cintura').value,
         sueno: document.getElementById('h-sueno').value,
         hidratacion: document.getElementById('h-hidratacion').value,
-        suplementos: document.getElementById('h-suplementos').value,
         sensaciones: document.getElementById('h-sensaciones').value
       });
       showToast('Datos guardados');
@@ -2459,9 +2476,10 @@
     var rows = [
       {label:'Peso', get:function(h){ return h.peso ? h.peso+' kg' : '—'; }},
       {label:'Cintura', get:function(h){ return h.cintura ? h.cintura+' cm' : '—'; }},
-      {label:'Calorías', get:function(h){ return dayTotals(h).calorias || '—'; }},
+      {label:'Cal. consumidas', get:function(h){ return dayTotals(h).calorias || '—'; }},
+      {label:'Cal. activas', get:function(h){ return dayTotals(h).activas || '—'; }},
       {label:'Proteína', get:function(h){ var p = dayTotals(h).proteina; return p ? p+'g' : '—'; }},
-      {label:'Hidratación', get:function(h){ return h.hidratacion || '—'; }}
+      {label:'Hidratación', get:function(h){ return h.hidratacion ? h.hidratacion+' L' : '—'; }}
     ];
     rows.forEach(function(r){
       html += '<tr><td class="hist-item-label">'+r.label+'</td>';
@@ -2539,8 +2557,59 @@
     html += '<div class="prio-row"><span class="prio-name">Promedio proteína (días con dato)</span><span class="prio-ratio">'+(protCount? Math.round(protSum/protCount)+'g' : '—')+'</span></div>';
     html += '</div>';
 
+    html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Detalle diario</span></div>';
+    var days7b = last7Days().slice().reverse();
+    days7b.forEach(function(d){
+      var k = dateKey(d);
+      var h = health[k] || emptyHealthEntry();
+      var totals = dayTotals(h);
+      var isOpen = expandedHealthDay === k;
+      html += '<div class="entry-row" style="cursor:pointer;" data-toggledaydetail="'+k+'"><span class="entry-time">'+(isOpen?'−':'+')+'</span><span class="entry-main">'+formatDateHuman(k)+'<span class="entry-macros">'+totals.calorias+' kcal consumidas · '+totals.proteina+'g proteína</span></span></div>';
+      if(isOpen){
+        html += '<div style="padding:0 0 10px 20px;">';
+        html += '<div class="field-label" style="margin-top:6px;">Comidas</div>';
+        if(h.comidas && h.comidas.length){
+          h.comidas.forEach(function(e){
+            var macro = [];
+            if(e.calorias) macro.push(e.calorias+' kcal');
+            if(e.proteina) macro.push(e.proteina+'g prot');
+            html += '<div class="entry-row"><span class="entry-time">'+e.hora+'</span><span class="entry-main">'+e.texto+(macro.length?'<span class="entry-macros">'+macro.join(' · ')+'</span>':'')+'</span></div>';
+          });
+        } else {
+          html += '<div class="empty-note" style="padding:4px 0;color:var(--ink-soft);">Sin comidas cargadas.</div>';
+        }
+        html += '<div class="field-label">Entrenamiento</div>';
+        if(h.entrenamientos && h.entrenamientos.length){
+          h.entrenamientos.forEach(function(e){
+            html += '<div class="entry-row"><span class="entry-time">'+e.hora+'</span><span class="entry-main">'+e.texto+(e.calorias?'<span class="entry-macros">'+e.calorias+' kcal activas</span>':'')+'</span></div>';
+          });
+        } else {
+          html += '<div class="empty-note" style="padding:4px 0;color:var(--ink-soft);">Sin actividad cargada.</div>';
+        }
+        if(h.suplementos && h.suplementos.length){
+          html += '<div class="field-label">Suplementos</div>';
+          h.suplementos.forEach(function(e){
+            var macro = [];
+            if(e.calorias) macro.push(e.calorias+' kcal');
+            if(e.proteina) macro.push(e.proteina+'g prot');
+            html += '<div class="entry-row"><span class="entry-time">'+e.hora+'</span><span class="entry-main">'+e.texto+(macro.length?'<span class="entry-macros">'+macro.join(' · ')+'</span>':'')+'</span></div>';
+          });
+        }
+        html += '</div>';
+      }
+    });
+    html += '</div>';
+
     contentEl.innerHTML = html;
+    contentEl.querySelectorAll('[data-toggledaydetail]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var k = btn.getAttribute('data-toggledaydetail');
+        expandedHealthDay = (expandedHealthDay === k) ? null : k;
+        renderResumenSalud();
+      });
+    });
   }
+  var expandedHealthDay = null;
 
   var currentMainTab = 'objetivos';
   var objetivosSubTab = 'hoy';
