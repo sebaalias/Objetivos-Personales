@@ -1,6 +1,6 @@
 {
-  "name": "Objetivos personales",
-  "short_name": "Objetivos",
+  "name": "Seguimiento Personal",
+  "short_name": "Seguimiento",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#16241F",
