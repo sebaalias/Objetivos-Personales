@@ -718,6 +718,12 @@
     flex-wrap:nowrap;
   }
   .field-header .field-label{margin:0;flex:1;}
+  .field-header.compact{margin:8px 0 3px;}
+  .field-input.compact{
+    padding:6px 8px;
+    font-size:13.5px;
+    text-align:center;
+  }
   .na-toggle{
     font-size:10.5px;
     font-family:'IBM Plex Mono',monospace;
@@ -2208,18 +2214,20 @@
     }
     html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Datos del día</span></div>';
     html += '<div class="field-row2"><div>';
-    html += '<div class="field-header"><label class="field-label" style="margin-top:0;">Peso</label>'+naBtn('peso')+'</div>';
-    html += '<input type="number" step="0.1" class="field-input" id="h-peso" value="'+(day.peso||'')+'" placeholder="kg, ej. 80.5"'+(day.na.peso?' disabled':'')+'>';
+    html += '<div class="field-header compact"><label class="field-label" style="margin-top:0;">Peso</label>'+naBtn('peso')+'</div>';
+    html += '<input type="number" step="0.1" class="field-input compact" id="h-peso" value="'+(day.peso||'')+'" placeholder="kg"'+(day.na.peso?' disabled':'')+'>';
     html += '</div><div>';
-    html += '<div class="field-header"><label class="field-label" style="margin-top:0;">Cintura</label>'+naBtn('cintura')+'</div>';
-    html += '<input type="number" step="0.5" class="field-input" id="h-cintura" value="'+(day.cintura||'')+'" placeholder="cm, ej. 88"'+(day.na.cintura?' disabled':'')+'>';
+    html += '<div class="field-header compact"><label class="field-label" style="margin-top:0;">Cintura</label>'+naBtn('cintura')+'</div>';
+    html += '<input type="number" step="0.5" class="field-input compact" id="h-cintura" value="'+(day.cintura||'')+'" placeholder="cm"'+(day.na.cintura?' disabled':'')+'>';
     html += '</div></div>';
 
-    html += '<div class="field-header"><label class="field-label">Sueño (horas)</label>'+naBtn('sueno')+'</div>';
-    html += '<input type="number" step="0.5" class="field-input" id="h-sueno" value="'+(day.sueno||'')+'" placeholder="ej. 7.5"'+(day.na.sueno?' disabled':'')+'>';
-
-    html += '<div class="field-header"><label class="field-label">Hidratación (L, total del día)</label>'+naBtn('hidratacion')+'</div>';
-    html += '<input type="number" step="0.1" class="field-input" id="h-hidratacion" value="'+(day.hidratacion||'')+'" placeholder="ej. 2"'+(day.na.hidratacion?' disabled':'')+'>';
+    html += '<div class="field-row2"><div>';
+    html += '<div class="field-header compact"><label class="field-label">Sueño (h)</label>'+naBtn('sueno')+'</div>';
+    html += '<input type="number" step="0.5" class="field-input compact" id="h-sueno" value="'+(day.sueno||'')+'" placeholder="hs"'+(day.na.sueno?' disabled':'')+'>';
+    html += '</div><div>';
+    html += '<div class="field-header compact"><label class="field-label">Hidrat. (L)</label>'+naBtn('hidratacion')+'</div>';
+    html += '<input type="number" step="0.1" class="field-input compact" id="h-hidratacion" value="'+(day.hidratacion||'')+'" placeholder="L"'+(day.na.hidratacion?' disabled':'')+'>';
+    html += '</div></div>';
     html += '<div class="health-actions"><button class="health-save-btn" id="save-health">Guardar datos del día</button></div>';
     html += '</div>';
 
