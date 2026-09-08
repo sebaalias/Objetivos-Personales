@@ -828,6 +828,7 @@
   var SETTINGS_KEY = 'op_settings';
   var MONTHLY_KEY = 'op_monthly';
   var GOALS_KEY = 'op_goals';
+  var GOAL_HISTORY_KEY = 'op_goal_history';
   var HEALTH_KEY = 'op_health';
   var PARAMS_KEY = 'op_params';
 
@@ -900,6 +901,7 @@
   var monthlyEntries = {};
   var settings = {startDate:null};
   var goals = [];
+  var goalHistory = [];
   var health = {};
   var params = {notes:''};
   var currentTab = 'hoy';
@@ -936,6 +938,7 @@
   function todayKey(){ return dateKey(new Date()); }
   function isWeekend(d){ var day = d.getDay(); return day===0 || day===6; }
   function isBeforeStart(key){ return !!settings.startDate && key < settings.startDate; }
+  function isBeforeHealthStart(key){ return !!settings.healthStartDate && key < settings.healthStartDate; }
   function monthKey(d){ d = d || new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1); }
   function isDayRequired(item, d){
     if(item.frequency === 'monthly') return false;
@@ -1169,6 +1172,22 @@
   function saveGoals(){
     try{ localStorage.setItem(GOALS_KEY, JSON.stringify(goals)); }
     catch(e){ console.error('No se pudo guardar', e); storageOk = false; }
+  }
+  function saveGoalHistory(){
+    try{ localStorage.setItem(GOAL_HISTORY_KEY, JSON.stringify(goalHistory)); }
+    catch(e){ console.error('No se pudo guardar', e); storageOk = false; }
+  }
+  function resetHealthCycle(){
+    var from = settings.healthStartDate || null;
+    var to = todayKey();
+    goalHistory.push({
+      from: from,
+      to: to,
+      goals: JSON.parse(JSON.stringify(goals))
+    });
+    saveGoalHistory();
+    settings.healthStartDate = todayKey();
+    saveSettings();
   }
   function saveHealth(){
     try{ localStorage.setItem(HEALTH_KEY, JSON.stringify(health)); }
@@ -2100,6 +2119,8 @@
   // ---------- SALUD: sub-render Metas ----------
   function renderMetas(){
     var html = '';
+    var cycleLabel = settings.healthStartDate ? formatDateHuman(settings.healthStartDate) : formatDateHuman(todayKey());
+    html += '<div class="empty-note" style="text-align:left;padding:0 0 16px;">Plan desde el <strong style="color:var(--paper);">'+cycleLabel+'</strong> · <button class="link-btn" id="reset-health-cycle">reiniciar</button></div>';
     html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Metas</span></div>';
     goals.forEach(function(g){
       if(confirmDeleteGoal === g.id){
@@ -2155,6 +2176,15 @@
 
     contentEl.innerHTML = html;
 
+    var resetHealthBtn = document.getElementById('reset-health-cycle');
+    if(resetHealthBtn){
+      resetHealthBtn.addEventListener('click', function(){
+        if(!confirm('Esto guarda tus metas actuales en el historial y arranca un nuevo ciclo desde hoy para "Evolución". No borra ningún registro de días ni comidas. ¿Continuar?')) return;
+        resetHealthCycle();
+        showToast('Nuevo ciclo iniciado');
+        render();
+      });
+    }
     var openGoalBtn = document.getElementById('open-add-goal');
     if(openGoalBtn) openGoalBtn.addEventListener('click', function(){ openAddGoal = true; addGoalError.msg = null; render(); });
     var cancelGoalBtn = document.getElementById('cancel-add-goal');
@@ -2212,7 +2242,7 @@
       var isNA = !!day.na[field];
       return '<button class="na-toggle'+(isNA?' active':'')+'" data-natoggle="'+field+'">'+(isNA?'N/A ✕':'N/A')+'</button>';
     }
-    html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Datos del día</span></div>';
+    html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Datos del día</span><button class="link-btn" id="save-health" style="margin-left:auto;">Guardar</button></div>';
     html += '<div class="field-row2"><div>';
     html += '<div class="field-header compact"><label class="field-label" style="margin-top:0;">Peso</label>'+naBtn('peso')+'</div>';
     html += '<input type="number" step="0.1" class="field-input compact" id="h-peso" value="'+(day.peso||'')+'" placeholder="kg"'+(day.na.peso?' disabled':'')+'>';
@@ -2228,7 +2258,6 @@
     html += '<div class="field-header compact"><label class="field-label">Hidrat. (L)</label>'+naBtn('hidratacion')+'</div>';
     html += '<input type="number" step="0.1" class="field-input compact" id="h-hidratacion" value="'+(day.hidratacion||'')+'" placeholder="L"'+(day.na.hidratacion?' disabled':'')+'>';
     html += '</div></div>';
-    html += '<div class="health-actions"><button class="health-save-btn" id="save-health">Guardar datos del día</button></div>';
     html += '</div>';
 
     var calGoal = parseGoalRange((findGoal(/calor/i)||{}).target);
@@ -2339,10 +2368,9 @@
     var calGoal = parseGoalRange((findGoal(/calor/i)||{}).target);
     var protGoal = parseGoalRange((findGoal(/prote/i)||{}).target);
 
-    html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Sensaciones / observaciones</span></div>';
+    html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Sensaciones / observaciones</span><button class="link-btn" id="save-sensaciones" style="margin-left:auto;">Guardar</button></div>';
     html += '<div class="field-header" style="margin-top:0;"><label class="field-label" style="margin-top:0;">Cómo estuvo el día</label>'+naBtn('sensaciones')+'</div>';
     html += '<textarea class="field-textarea" id="h-sensaciones" placeholder="Cómo te sentiste, ánimo, algo raro"'+(day.na.sensaciones?' disabled':'')+'>'+(day.sensaciones||'')+'</textarea>';
-    html += '<div class="health-actions"><button class="health-save-btn" id="save-sensaciones">Guardar</button></div>';
     html += '</div>';
 
     html += '<div class="card">';
@@ -2531,11 +2559,13 @@
 
   // ---------- SALUD: sub-render Resumen (evolución, informativa) ----------
   function renderResumenSalud(){
-    var keys = Object.keys(health).sort();
+    var keys = Object.keys(health).sort().filter(function(k){ return !isBeforeHealthStart(k); });
     var pesoKeys = keys.filter(function(k){ return health[k].peso; });
     var cinturaKeys = keys.filter(function(k){ return health[k].cintura; });
     var html = '';
 
+    var cycleLabel = settings.healthStartDate ? formatDateHuman(settings.healthStartDate) : formatDateHuman(todayKey());
+    html += '<div class="empty-note" style="text-align:left;padding:0 0 12px;color:rgba(237,231,214,0.6);">Evolución del ciclo actual, desde el <strong style="color:var(--paper);">'+cycleLabel+'</strong>.</div>';
     html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Evolución</span></div>';
     if(pesoKeys.length){
       var firstPesoKey = pesoKeys[0], lastPesoKey = pesoKeys[pesoKeys.length-1];
@@ -2624,6 +2654,28 @@
     });
     html += '</div>';
 
+    if(goalHistory && goalHistory.length){
+      html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Ciclos anteriores</span></div>';
+      goalHistory.slice().reverse().forEach(function(cycle, idx){
+        var isOpen = expandedCycle === (goalHistory.length - 1 - idx);
+        var realIdx = goalHistory.length - 1 - idx;
+        var fromLabel = cycle.from ? formatDateHuman(cycle.from) : 'inicio';
+        html += '<div class="entry-row" style="cursor:pointer;" data-togglecycle="'+realIdx+'"><span class="entry-time">'+(isOpen?'−':'+')+'</span><span class="entry-main">'+fromLabel+' → '+formatDateHuman(cycle.to)+'</span></div>';
+        if(isOpen){
+          html += '<div style="padding:0 0 10px 20px;">';
+          if(cycle.goals && cycle.goals.length){
+            cycle.goals.forEach(function(g){
+              html += '<div class="goal-row"><span class="goal-main"><span class="goal-label">'+g.label+'</span><span class="goal-detail">'+(g.target||'sin definir')+'</span></span></div>';
+            });
+          } else {
+            html += '<div class="empty-note" style="padding:4px 0;color:var(--ink-soft);">Sin metas registradas en ese ciclo.</div>';
+          }
+          html += '</div>';
+        }
+      });
+      html += '</div>';
+    }
+
     contentEl.innerHTML = html;
     contentEl.querySelectorAll('[data-toggledaydetail]').forEach(function(btn){
       btn.addEventListener('click', function(){
@@ -2632,8 +2684,16 @@
         renderResumenSalud();
       });
     });
+    contentEl.querySelectorAll('[data-togglecycle]').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var idx = parseInt(btn.getAttribute('data-togglecycle'), 10);
+        expandedCycle = (expandedCycle === idx) ? null : idx;
+        renderResumenSalud();
+      });
+    });
   }
   var expandedHealthDay = null;
+  var expandedCycle = null;
 
   var currentMainTab = 'objetivos';
   var objetivosSubTab = 'hoy';
@@ -2706,7 +2766,7 @@
   var importPanel = document.getElementById('import-panel');
 
   function exportData(){
-    var payload = {config:config, entries:entries, monthlyEntries:monthlyEntries, settings:settings, goals:goals, health:health, params:params, exportedAt: todayKey()};
+    var payload = {config:config, entries:entries, monthlyEntries:monthlyEntries, settings:settings, goals:goals, goalHistory:goalHistory, health:health, params:params, exportedAt: todayKey()};
     var blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
@@ -2730,9 +2790,10 @@
       monthlyEntries = pendingImport.monthlyEntries || {};
       settings = pendingImport.settings || {startDate:null};
       goals = pendingImport.goals || defaultGoals();
+      goalHistory = pendingImport.goalHistory || [];
       health = pendingImport.health || {};
       params = pendingImport.params || {notes: defaultParamsNotes()};
-      saveConfig(); saveEntries(); saveMonthly(); saveSettings(); saveGoals(); saveHealth(); saveParams();
+      saveConfig(); saveEntries(); saveMonthly(); saveSettings(); saveGoals(); saveGoalHistory(); saveHealth(); saveParams();
       pendingImport = null;
       importPanel.innerHTML = '';
       tabsEl.style.display = settings.startDate ? 'flex' : 'none';
@@ -2800,6 +2861,14 @@
       goals = goalsRaw ? JSON.parse(goalsRaw) : null;
     }catch(e){ goals = null; storageOk = false; }
     if(!goals){ goals = defaultGoals(); saveGoals(); }
+    try{
+      var goalHistRaw = localStorage.getItem(GOAL_HISTORY_KEY);
+      goalHistory = goalHistRaw ? JSON.parse(goalHistRaw) : [];
+    }catch(e){ goalHistory = []; storageOk = false; }
+    if(!settings.healthStartDate){
+      settings.healthStartDate = settings.startDate || todayKey();
+      saveSettings();
+    }
     try{
       var healthRaw = localStorage.getItem(HEALTH_KEY);
       health = healthRaw ? JSON.parse(healthRaw) : {};
