@@ -725,6 +725,7 @@
   }
   .field-save-btn svg{width:12px;height:12px;}
   .field-save-btn:active{background:var(--ocean);color:var(--paper);}
+  .field-save-btn.saved{background:var(--ocean);border-color:var(--ocean);color:var(--paper);}
   .field-header{
     display:flex;
     align-items:center;
@@ -2261,7 +2262,8 @@
 
     function naBtn(field, activeLabel){
       var isNA = !!day.na[field];
-      return '<button class="field-save-btn" data-savefield="'+field+'" aria-label="Guardar">'+fieldSaveIcon()+'</button><button class="na-toggle'+(isNA?' active':'')+'" data-natoggle="'+field+'">'+(isNA?'N/A ✕':'N/A')+'</button>';
+      var isSaved = isNA || (day[field] !== undefined && day[field] !== '' && day[field] !== null);
+      return '<button class="field-save-btn'+(isSaved?' saved':'')+'" data-savefield="'+field+'" aria-label="Guardar">'+fieldSaveIcon()+'</button><button class="na-toggle'+(isNA?' active':'')+'" data-natoggle="'+field+'">'+(isNA?'N/A ✕':'N/A')+'</button>';
     }
     html += '<div class="card"><div class="card-head"><span class="card-title" style="font-size:15px;">Datos del día</span></div>';
     html += '<div class="field-row2"><div>';
